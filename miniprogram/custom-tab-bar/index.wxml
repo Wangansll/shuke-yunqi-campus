@@ -1,0 +1,6 @@
+<view class="tabbar {{hidden ? 'is-hidden' : ''}}">
+  <view class="item" wx:for="{{list}}" wx:key="key" data-i="{{index}}" bindtap="onTap">
+    <view class="ico ico-{{item.key}} {{active===index ? 'on' : ''}}"></view>
+    <text class="txt {{active===index ? 'on' : ''}}">{{item.text}}</text>
+  </view>
+</view>

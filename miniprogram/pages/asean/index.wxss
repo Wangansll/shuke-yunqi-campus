@@ -1,0 +1,448 @@
+/* pages/asean/index.wxss
+   设计语言：南洋手册（不站内蓝，按东盟气质另立一套）
+   —— 大米纸底色 + 雨林深绿 + 庙宇金线 + 陶土红点缀
+   纹样全部用 CSS 渐变画：batik 菱格（hero-grid）、经线纸纹（page）、赤道菱形（eq），零素材零体积。 */
+
+.page {
+  min-height: 100vh; padding-bottom: 48rpx;
+  background-color: #FBF5E9;
+  /* 米纸纹：纵横各一道极淡的织线 */
+  background-image:
+    repeating-linear-gradient(0deg, rgba(150,110,55,0.045) 0 1rpx, transparent 1rpx 15rpx),
+    repeating-linear-gradient(90deg, rgba(150,110,55,0.035) 0 1rpx, transparent 1rpx 15rpx);
+}
+
+/* ================= 顶部 ================= */
+.hero {
+  position: relative; overflow: hidden;
+  padding: 40rpx 34rpx 30rpx;
+  background:
+    radial-gradient(120% 86% at 84% -14%, rgba(232,193,122,0.30) 0%, rgba(232,193,122,0) 58%),
+    linear-gradient(158deg, #0A2C27 0%, #10453A 52%, #1A6B50 100%);
+  border-radius: 0 0 44rpx 44rpx;
+  box-shadow: 0 14rpx 34rpx -18rpx rgba(9,42,34,0.75);
+}
+/* batik 菱格纹：两个 45° 方向的细线交织 */
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(232,193,122,0.085) 0 1rpx, transparent 1rpx 30rpx),
+    repeating-linear-gradient(-45deg, rgba(232,193,122,0.085) 0 1rpx, transparent 1rpx 30rpx);
+}
+.ring { position: absolute; border-radius: 50%; border: 1rpx solid rgba(232,193,122,0.34); }
+.r1 { width: 300rpx; height: 300rpx; right: -104rpx; top: -118rpx; }
+.r2 { width: 456rpx; height: 456rpx; right: -182rpx; top: -196rpx; border-color: rgba(232,193,122,0.20); }
+.r3 { width: 612rpx; height: 612rpx; right: -260rpx; top: -274rpx; border-color: rgba(232,193,122,0.11); }
+/* 金色赤道弧：只留左上四分之一 */
+.arc {
+  position: absolute; right: -150rpx; bottom: -250rpx; width: 520rpx; height: 520rpx;
+  border-radius: 50%; border: 5rpx solid rgba(232,193,122,0.42);
+  border-left-color: transparent; border-bottom-color: transparent;
+  transform: rotate(-24deg);
+}
+.glow {
+  position: absolute; left: -80rpx; bottom: -120rpx; width: 340rpx; height: 340rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,107,80,0.85) 0%, rgba(26,107,80,0) 70%);
+}
+
+.hero-top { position: relative; display: flex; align-items: flex-start; justify-content: space-between; }
+.hero-l { min-width: 0; }
+.kicker {
+  font-size: 17rpx; color: #E8C17A; letter-spacing: 6rpx; font-weight: 600;
+  opacity: 0.92;
+}
+.h1 {
+  color: #FFFFFF; font-size: 50rpx; font-weight: 800; letter-spacing: 3rpx;
+  margin-top: 14rpx; line-height: 1.1;
+  text-shadow: 0 4rpx 14rpx rgba(4,22,18,0.35);
+}
+.h1-d { color: #E8C17A; font-weight: 400; margin: 0 10rpx; font-size: 40rpx; }
+.h2 { color: rgba(255,255,255,0.66); font-size: 21rpx; margin-top: 14rpx; letter-spacing: 1rpx; }
+
+/* 北京时间：像登机牌的一块存根 */
+.bj {
+  text-align: right; flex-shrink: 0; margin-left: 20rpx; padding-left: 22rpx;
+  border-left: 1rpx dashed rgba(232,193,122,0.42);
+}
+.bj-l { color: rgba(232,193,122,0.86); font-size: 17rpx; letter-spacing: 2rpx; }
+.bj-t {
+  color: #FFFFFF; font-size: 44rpx; font-weight: 700; letter-spacing: 2rpx; margin-top: 6rpx;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 赤道线 + 十颗菱形（十国） */
+.eq { position: relative; display: flex; align-items: center; gap: 12rpx; margin-top: 28rpx; }
+.eq-l { flex: 1; height: 1rpx; background: rgba(232,193,122,0.30); }
+.eq-ds { display: flex; gap: 10rpx; }
+.eq-d {
+  width: 9rpx; height: 9rpx; background: #E8C17A; opacity: 0.85;
+  transform: rotate(45deg); border-radius: 1rpx;
+}
+
+.hero-tags { position: relative; display: flex; gap: 12rpx; margin-top: 24rpx; }
+.ht {
+  font-size: 18rpx; color: #F2DCA6;
+  border: 1rpx solid rgba(232,193,122,0.40); border-radius: 6rpx;
+  padding: 7rpx 16rpx; letter-spacing: 1rpx;
+}
+
+/* ================= 分区导航 ================= */
+.nav {
+  position: sticky; top: 0; z-index: 20;
+  background: #FBF5E9; padding: 18rpx 0 14rpx;
+  box-shadow: 0 1rpx 0 rgba(160,120,60,0.14);
+}
+.nav-in { display: flex; gap: 12rpx; padding: 0 30rpx; }
+.nav-i {
+  flex-shrink: 0; font-size: 23rpx; color: #6B5A42; background: rgba(255,253,248,0.9);
+  padding: 11rpx 28rpx; border-radius: 8rpx; border: 1rpx solid rgba(160,120,60,0.22);
+  transition: all .18s;
+}
+.nav-i.nav-hl {
+  color: #F5DFAE; border-color: transparent; background: #10453A;
+  box-shadow: 0 6rpx 16rpx -8rpx rgba(16,69,58,0.7);
+}
+
+/* 分区标题：中文 + 英文小标 + 右侧状态 */
+.sec-h { display: flex; align-items: baseline; margin: 42rpx 32rpx 16rpx; }
+.sec-t {
+  position: relative; padding-left: 22rpx;
+  font-size: 31rpx; font-weight: 800; color: #231F17; letter-spacing: 1rpx;
+}
+.sec-t:before {
+  content: ''; position: absolute; left: 0; top: 50%; width: 8rpx; height: 8rpx;
+  margin-top: -4rpx; background: #B8862F; transform: rotate(45deg);
+}
+.sec-e {
+  font-size: 16rpx; color: #B08B4F; letter-spacing: 4rpx; margin-left: 14rpx;
+  font-weight: 600;
+}
+.rt {
+  margin-left: auto; font-size: 18rpx; color: #1B6B52;
+  background: rgba(27,107,82,0.10); border: 1rpx solid rgba(27,107,82,0.20);
+  padding: 4rpx 14rpx; border-radius: 6rpx; font-weight: 600;
+}
+
+/* ================= 通用卡片 ================= */
+.card {
+  background: linear-gradient(180deg, #FFFDF8 0%, #FEF9EF 100%);
+  border: 1rpx solid rgba(176,139,79,0.24);
+  border-radius: 20rpx;
+  box-shadow: 0 12rpx 30rpx -20rpx rgba(90,60,20,0.55);
+  padding: 26rpx;
+}
+
+/* ================= 汇率 ================= */
+.fx { margin: 0 30rpx; }
+.modes { display: flex; background: #F2E9D8; border-radius: 10rpx; padding: 5rpx; margin-bottom: 22rpx; }
+.mode { flex: 1; text-align: center; font-size: 22rpx; color: #7A6647; padding: 13rpx 0; border-radius: 8rpx; transition: all .18s; }
+.mode.on {
+  background: #FFFDF8; color: #10453A; font-weight: 700;
+  box-shadow: 0 2rpx 8rpx rgba(120,85,30,0.16);
+}
+
+.fx-in { display: flex; align-items: center; gap: 16rpx; padding-bottom: 20rpx; border-bottom: 1rpx dashed rgba(160,120,60,0.28); }
+.fx-l { font-size: 23rpx; color: #8A7658; letter-spacing: 1rpx; }
+.fx-num { flex: 1; font-size: 44rpx; font-weight: 800; color: #221E16; font-variant-numeric: tabular-nums; letter-spacing: 1rpx; }
+.fx-unit { font-size: 20rpx; color: #8A7658; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 20rpx 0 8rpx; }
+.chip {
+  font-size: 22rpx; color: #6B5A42; background: transparent; border-radius: 6rpx;
+  padding: 9rpx 20rpx; border: 1rpx solid rgba(160,120,60,0.26); transition: all .16s;
+}
+.chip.on { color: #FFF6E2; background: #10453A; border-color: #10453A; font-weight: 600; }
+
+.fx-rate {
+  font-size: 23rpx; color: #1B6B52; background: rgba(27,107,82,0.07);
+  border-left: 5rpx solid #B8862F; border-radius: 8rpx;
+  padding: 14rpx 18rpx; margin-top: 14rpx;
+}
+.fx-list { margin-top: 8rpx; }
+.fx-row { display: flex; align-items: center; gap: 16rpx; padding: 21rpx 0; border-bottom: 1rpx solid rgba(160,120,60,0.14); }
+.fx-row:last-child { border-bottom: none; }
+.fx-cc {
+  width: 74rpx; height: 42rpx; line-height: 42rpx; text-align: center; flex-shrink: 0;
+  font-size: 18rpx; font-weight: 700; color: #9A6E22; background: transparent;
+  border: 1rpx solid rgba(154,110,34,0.42); border-radius: 4rpx; letter-spacing: 1rpx;
+}
+.hide { visibility: hidden; }
+.fx-name { flex: 1; font-size: 25rpx; color: #4A4232; }
+.fx-val {
+  font-size: 30rpx; font-weight: 700; color: #221E16;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.5rpx;
+}
+.fx-note { font-size: 18rpx; color: #A79880; margin-top: 16rpx; text-align: center; }
+
+/* ================= 翻译 ================= */
+.tr { margin: 0 30rpx; }
+.tr-input {
+  width: 100%; min-height: 108rpx; font-size: 27rpx; color: #221E16;
+  background: #FBF4E6; border-radius: 12rpx; padding: 20rpx; line-height: 1.6;
+  border: 1rpx solid rgba(160,120,60,0.18);
+}
+.ph { margin-top: 18rpx; }
+.ph-g { display: flex; gap: 26rpx; margin-bottom: 16rpx; }
+.ph-gi { font-size: 22rpx; color: #A08A66; padding-bottom: 6rpx; border-bottom: 3rpx solid transparent; }
+.ph-gi.on { color: #10453A; border-color: #B8862F; font-weight: 700; }
+.ph-list { display: flex; flex-wrap: wrap; gap: 12rpx; }
+.ph-i {
+  font-size: 22rpx; color: #4A4232; background: transparent;
+  border: 1rpx dashed rgba(160,120,60,0.38); border-radius: 4rpx; padding: 9rpx 16rpx;
+}
+.tr-btns { display: flex; gap: 12rpx; margin: 24rpx 0 20rpx; }
+.tr-lang {
+  font-size: 22rpx; color: #6B5A42; background: transparent;
+  border: 1rpx solid rgba(160,120,60,0.28);
+  padding: 11rpx 24rpx; border-radius: 6rpx; transition: all .16s;
+}
+.tr-lang.sel { color: #FFF6E2; background: #10453A; border-color: #10453A; }
+.btn-primary {
+  background: linear-gradient(135deg, #14563F, #0C3A2D);
+  color: #F5DFAE; font-size: 27rpx; font-weight: 700; letter-spacing: 4rpx;
+  border-radius: 8rpx; padding: 19rpx 0; text-align: center;
+  box-shadow: 0 10rpx 22rpx -12rpx rgba(12,58,45,0.9);
+}
+.tr-go { margin-top: 4rpx; }
+.tr-result {
+  margin-top: 24rpx; background: rgba(27,107,82,0.06);
+  border: 1rpx solid rgba(27,107,82,0.18); border-left: 5rpx solid #B8862F;
+  border-radius: 8rpx; padding: 22rpx; position: relative;
+}
+.tr-rl { font-size: 18rpx; color: #8A7658; letter-spacing: 3rpx; }
+.tr-rt { font-size: 29rpx; color: #1B2A22; font-weight: 600; line-height: 1.7; margin-top: 8rpx; padding-right: 76rpx; }
+.tr-copy { position: absolute; right: 20rpx; top: 18rpx; font-size: 21rpx; color: #9A6E22; }
+
+/* ================= 时差时钟：一排深色卡，像夜间航班信息屏 ================= */
+.clk-bar { width: 100%; }
+.clk-in { display: flex; gap: 14rpx; padding: 2rpx 30rpx 8rpx; }
+.clk-c {
+  flex-shrink: 0; width: 156rpx;
+  background: linear-gradient(165deg, #0F3B34 0%, #17584A 100%);
+  border: 1rpx solid rgba(232,193,122,0.26);
+  border-radius: 14rpx; padding: 20rpx 12rpx 18rpx; text-align: center;
+  box-shadow: 0 10rpx 24rpx -16rpx rgba(9,42,34,0.9);
+}
+.clk-ab {
+  width: 46rpx; height: 46rpx; line-height: 44rpx; margin: 0 auto;
+  border-radius: 50%; background: transparent;
+  border: 1rpx solid rgba(232,193,122,0.55);
+  color: #E8C17A; font-size: 23rpx; font-weight: 800;
+}
+.clk-n { font-size: 20rpx; color: rgba(255,255,255,0.62); margin-top: 8rpx; letter-spacing: 1rpx; }
+.clk-t {
+  font-size: 31rpx; font-weight: 800; color: #FFFFFF; margin-top: 8rpx;
+  font-variant-numeric: tabular-nums; letter-spacing: 1.5rpx;
+}
+.clk-t.same { color: #E8C17A; }
+.clk-d { font-size: 17rpx; color: rgba(232,193,122,0.62); margin-top: 5rpx; }
+
+/* ================= 十国速查 ================= */
+.search { margin: 0 30rpx 18rpx; position: relative; }
+.search-in {
+  background: #FFFDF8; border-radius: 8rpx; padding: 19rpx 56rpx 19rpx 24rpx;
+  font-size: 25rpx; color: #221E16;
+  border: 1rpx solid rgba(160,120,60,0.26);
+}
+.search-x { position: absolute; right: 18rpx; top: 16rpx; font-size: 34rpx; color: #A79880; width: 40rpx; text-align: center; }
+
+.countries { display: flex; flex-wrap: wrap; margin: 0 22rpx; }
+.country {
+  position: relative; overflow: hidden;
+  width: calc(50% - 16rpx); margin: 8rpx; padding: 26rpx 20rpx 22rpx;
+  background: linear-gradient(180deg, #FFFDF8 0%, #FEF8EC 100%);
+  border: 1rpx solid rgba(176,139,79,0.24);
+  border-radius: 18rpx; box-sizing: border-box;
+  box-shadow: 0 10rpx 26rpx -20rpx rgba(90,60,20,0.5);
+}
+/* 顶部：batik 短线段 */
+.c-bar {
+  position: absolute; left: 0; top: 0; width: 100%; height: 5rpx;
+  background: repeating-linear-gradient(90deg, rgba(184,134,47,0.75) 0 12rpx, transparent 12rpx 22rpx);
+}
+.c-top { display: flex; align-items: center; justify-content: space-between; }
+/* 单字徽：像一枚方形印章 */
+.c-ab {
+  width: 58rpx; height: 58rpx; line-height: 55rpx; text-align: center; flex-shrink: 0;
+  border-radius: 4rpx; background: transparent;
+  border: 2rpx solid rgba(154,110,34,0.55);
+  color: #9A6E22; font-size: 30rpx; font-weight: 800;
+}
+.c-visa { font-size: 17rpx; padding: 4rpx 11rpx; border-radius: 4rpx; letter-spacing: 0.5rpx; }
+.v-free { color: #1B6B52; background: rgba(27,107,82,0.10); border: 1rpx solid rgba(27,107,82,0.20); }
+.v-e { color: #9A6E22; background: rgba(184,134,47,0.10); border: 1rpx solid rgba(184,134,47,0.26); }
+.v-no { color: #A8472F; background: rgba(168,71,47,0.09); border: 1rpx solid rgba(168,71,47,0.22); }
+.c-name { font-size: 29rpx; font-weight: 800; color: #231F17; margin-top: 16rpx; letter-spacing: 1rpx; }
+.c-en { font-size: 15rpx; color: #B08B4F; letter-spacing: 2rpx; margin-top: 5rpx; }
+.c-cur { font-size: 20rpx; color: #6B5A42; margin-top: 8rpx; }
+.c-cap { font-size: 19rpx; color: #A79880; margin-top: 4rpx; }
+
+.note { font-size: 19rpx; color: #A79880; line-height: 1.75; margin: 22rpx 34rpx 0; }
+
+/* ================= 清单 ================= */
+.ck { margin: 0 30rpx; }
+.bar { height: 6rpx; background: #EFE3CE; border-radius: 3rpx; overflow: hidden; margin-bottom: 8rpx; }
+.bar-in { height: 100%; background: linear-gradient(90deg, #B8862F, #1B6B52); border-radius: 3rpx; transition: width .25s; }
+.ck-i { display: flex; align-items: flex-start; gap: 18rpx; padding: 21rpx 0; border-bottom: 1rpx solid rgba(160,120,60,0.14); }
+.ck-i:last-of-type { border-bottom: none; }
+.ck-box {
+  width: 36rpx; height: 36rpx; border-radius: 4rpx; border: 1rpx solid rgba(160,120,60,0.5);
+  flex-shrink: 0; text-align: center; line-height: 34rpx; color: #FFF6E2; font-size: 22rpx;
+  transition: all .16s; margin-top: 2rpx;
+}
+.ck-box.on { background: #10453A; border-color: #10453A; }
+.ck-t { font-size: 25rpx; color: #3E3729; line-height: 1.55; flex: 1; }
+.ck-t.done { color: #A79880; text-decoration: line-through; }
+.ck-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 22rpx; }
+.ck-tip { font-size: 18rpx; color: #A79880; }
+.ck-reset { font-size: 21rpx; color: #9A6E22; }
+
+/* ================= 指南入口 ================= */
+.gdc { margin: 0 30rpx 4rpx; }
+.gdc-hd { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20rpx; }
+.gdc-t { font-size: 29rpx; font-weight: 800; color: #231F17; letter-spacing: 1rpx; }
+.gdc-s { font-size: 19rpx; color: #A79880; letter-spacing: 1rpx; }
+.gdc-grid { display: flex; flex-wrap: wrap; }
+.gdc-cell { width: 50%; padding: 0 6rpx 12rpx 0; box-sizing: border-box; }
+.gdc-cell:nth-child(even) { padding: 0 0 12rpx 6rpx; }
+.gdc-in {
+  display: flex; align-items: center; gap: 14rpx;
+  padding: 18rpx 14rpx; background: rgba(184,134,47,0.06);
+  border: 1rpx solid rgba(176,139,79,0.20); border-radius: 8rpx;
+}
+/* 字徽：金色方印 */
+.gdc-ic {
+  width: 52rpx; height: 52rpx; line-height: 49rpx; text-align: center; flex-shrink: 0;
+  border-radius: 4rpx; background: transparent;
+  border: 1rpx solid rgba(154,110,34,0.5);
+  color: #9A6E22; font-size: 25rpx; font-weight: 800;
+}
+.gdc-tx { min-width: 0; }
+.gdc-tt { font-size: 23rpx; font-weight: 700; color: #231F17; }
+.gdc-dd { font-size: 17rpx; color: #8A7658; margin-top: 4rpx; }
+
+/* ================= 指南全屏层 ================= */
+.gd {
+  position: fixed; inset: 0; z-index: 9999;
+  background-color: #FBF5E9;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(150,110,55,0.04) 0 1rpx, transparent 1rpx 15rpx),
+    repeating-linear-gradient(90deg, rgba(150,110,55,0.03) 0 1rpx, transparent 1rpx 15rpx);
+  display: flex; flex-direction: column;
+}
+/* 指南层不用第二个 app bar：做成手册的封面页，纸底 + 金线，和上方导航条分层 */
+.gd-top {
+  position: relative; flex-shrink: 0;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 28rpx 34rpx 22rpx;
+  background: #FBF5E9;
+}
+.gd-top:after {
+  content: ''; position: absolute; left: 34rpx; right: 34rpx; bottom: 0; height: 1rpx;
+  background: repeating-linear-gradient(90deg, rgba(154,110,34,0.42) 0 14rpx, transparent 14rpx 26rpx);
+}
+.gd-hl { min-width: 0; }
+.gd-kk { font-size: 16rpx; color: #B08B4F; letter-spacing: 5rpx; font-weight: 600; margin-bottom: 10rpx; }
+.gd-tt { font-size: 36rpx; font-weight: 800; color: #231F17; letter-spacing: 2rpx; }
+.gd-x { font-size: 40rpx; color: #A79880; line-height: 1; width: 56rpx; text-align: center; padding-bottom: 4rpx; }
+.gd-tabs { background: #FBF5E9; flex-shrink: 0; }
+.gd-tin { display: flex; gap: 10rpx; padding: 16rpx 28rpx 18rpx; }
+.gd-ti {
+  flex-shrink: 0; font-size: 22rpx; color: #6B5A42; background: transparent;
+  border: 1rpx solid rgba(160,120,60,0.24);
+  padding: 9rpx 22rpx; border-radius: 6rpx; transition: all .16s;
+}
+.gd-ti.on { color: #F5DFAE; background: #10453A; border-color: #10453A; font-weight: 600; }
+
+.gd-meta {
+  flex-shrink: 0; background: #FBF5E9; font-size: 19rpx; color: #A79880;
+  padding: 0 34rpx 16rpx; letter-spacing: 0.5rpx;
+}
+
+.gd-body { flex: 1; min-height: 0; padding: 0 26rpx calc(40rpx + env(safe-area-inset-bottom)); box-sizing: border-box; }
+.gd-sec { padding: 30rpx 6rpx 0; }
+.gd-st {
+  position: relative; padding-left: 24rpx;
+  font-size: 34rpx; font-weight: 800; color: #231F17; letter-spacing: 1rpx;
+}
+.gd-st:before {
+  content: ''; position: absolute; left: 0; top: 50%; width: 9rpx; height: 9rpx;
+  margin-top: -4rpx; background: #B8862F; transform: rotate(45deg);
+}
+.gd-ss { font-size: 20rpx; color: #A08A66; margin-top: 8rpx; padding-left: 24rpx; letter-spacing: 1rpx; }
+
+.gd-rows {
+  background: linear-gradient(180deg, #FFFDF8, #FEF8EC);
+  border: 1rpx solid rgba(176,139,79,0.22);
+  border-radius: 8rpx; padding: 2rpx 22rpx; margin-top: 18rpx;
+}
+.gd-row { display: flex; padding: 21rpx 0; border-bottom: 1rpx solid rgba(160,120,60,0.14); }
+.gd-row:last-child { border-bottom: none; }
+.gd-k { width: 126rpx; flex-shrink: 0; font-size: 22rpx; color: #A08A66; letter-spacing: 1rpx; }
+.gd-v { flex: 1; font-size: 25rpx; color: #231F17; line-height: 1.6; }
+
+.gd-list {
+  background: linear-gradient(180deg, #FFFDF8, #FEF8EC);
+  border: 1rpx solid rgba(176,139,79,0.22);
+  border-radius: 8rpx; padding: 2rpx 22rpx; margin-top: 18rpx;
+}
+.gd-li { padding: 21rpx 0; border-bottom: 1rpx solid rgba(160,120,60,0.14); }
+.gd-li:last-child { border-bottom: none; }
+.gd-lt { font-size: 25rpx; font-weight: 700; color: #231F17; }
+.gd-ld { display: block; font-size: 23rpx; color: #4A4232; line-height: 1.75; margin-top: 8rpx; }
+
+.gd-news { margin-top: 18rpx; }
+.gd-nw {
+  position: relative; overflow: hidden;
+  background: linear-gradient(180deg, #FFFDF8, #FEF8EC);
+  border: 1rpx solid rgba(176,139,79,0.22);
+  border-radius: 8rpx; padding: 22rpx 22rpx 22rpx 26rpx;
+  margin-bottom: 14rpx;
+}
+.gd-nw:before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4rpx;
+  background: linear-gradient(180deg, #B8862F, rgba(184,134,47,0.25));
+}
+.gd-nt { font-size: 25rpx; color: #231F17; line-height: 1.6; font-weight: 600; }
+.gd-nm { font-size: 19rpx; color: #A79880; margin-top: 10rpx; letter-spacing: 0.5rpx; }
+
+.gd-note { font-size: 19rpx; color: #A79880; line-height: 1.7; margin-top: 18rpx; padding: 0 4rpx; }
+.gd-foot { font-size: 18rpx; color: #B6A88E; text-align: center; padding: 40rpx 0 70rpx; letter-spacing: 0.5rpx; }
+
+/* ================= 国情弹层 ================= */
+.mask { position: fixed; inset: 0; background: rgba(10,32,26,0.5); z-index: 50; }
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 51;
+  background: #FBF5E9;
+  border-radius: 30rpx 30rpx 0 0; padding: 34rpx 32rpx calc(48rpx + env(safe-area-inset-bottom));
+  transform: translateY(100%); transition: transform .25s ease;
+  max-height: 72vh; overflow-y: auto; box-sizing: border-box;
+  box-shadow: 0 -14rpx 40rpx -20rpx rgba(9,42,34,0.6);
+}
+.sheet.show { transform: translateY(0); }
+/* 顶部拉手：一条金色短线 */
+.sheet::before {
+  content: ''; position: absolute; left: 50%; top: 14rpx; width: 64rpx; height: 4rpx;
+  margin-left: -32rpx; border-radius: 2rpx; background: rgba(154,110,34,0.35);
+}
+.sh-h { display: flex; align-items: center; justify-content: space-between; position: relative; }
+.sh-title { font-size: 38rpx; font-weight: 800; color: #231F17; letter-spacing: 2rpx; }
+.sh-x { font-size: 44rpx; color: #A79880; line-height: 1; }
+.sh-sub { font-size: 20rpx; color: #8A7658; margin-top: 10rpx; letter-spacing: 0.5rpx; }
+.c-info { margin-top: 22rpx; }
+.ci-row { display: flex; padding: 17rpx 0; border-bottom: 1rpx solid rgba(160,120,60,0.16); }
+.ci-k { width: 92rpx; font-size: 22rpx; color: #A08A66; flex-shrink: 0; letter-spacing: 1rpx; }
+.ci-v { flex: 1; font-size: 25rpx; color: #231F17; line-height: 1.5; }
+.c-tip {
+  font-size: 25rpx; color: #3E3729; line-height: 1.8; margin-top: 22rpx;
+  background: rgba(184,134,47,0.08); border-left: 5rpx solid #B8862F; border-radius: 8rpx;
+  padding: 20rpx 22rpx;
+}
+.c-warn { font-size: 19rpx; color: #A79880; line-height: 1.7; margin-top: 16rpx; }
+
+/* 空态（汇率/搜索）沿用米纸风格 */
+.empty {
+  text-align: center; color: #A79880; font-size: 25rpx;
+  padding: 44rpx 20rpx; line-height: 1.8;
+}

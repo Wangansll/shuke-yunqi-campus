@@ -1,0 +1,303 @@
+<!-- pages/me/index.wxml —— 我的 -->
+<view class="page">
+  <!-- 身份卡：深蓝渐变 + 网格 -->
+  <view class="hero">
+    <view class="h-grid"></view>
+    <view class="h-halo"></view>
+
+    <view class="h-row">
+      <view class="h-av">
+        <image wx:if="{{avatarUrl}}" class="h-img" src="{{avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="h-av-ph"><text class="h-av-ph-tx">微</text></view>
+      </view>
+      <view class="h-tx">
+        <view class="h-name">{{user ? userName : '未登录'}}</view>
+        <view class="h-sub">{{user ? subText : '授权后显示你的微信头像和昵称'}}</view>
+      </view>
+      <view class="h-tag" wx:if="{{user}}">{{badgeText}}</view>
+    </view>
+
+    <!-- 头像下方：小横条牌匾头衔（奖杯 + 头衔名），点一下从已获得里换一枚 -->
+    <view class="hp-row">
+      <view class="tplate {{user && title ? title.metal : 'none'}} {{user && titleOptions.length ? 'tap' : ''}}" bindtap="openTitle">
+        <block wx:if="{{user && title}}">
+          <image wx:if="{{cupSrc}}" class="tp-cup" src="{{cupSrc}}" mode="aspectFit" />
+          <text wx:else class="tp-cup-ph">✦</text>
+          <text class="tp-name">{{title.n}}</text>
+          <text class="tp-chg" wx:if="{{titleOptions.length > 1}}">›</text>
+        </block>
+        <text wx:else class="tp-name">{{user ? '暂无头衔' : '登录后显示头衔'}}</text>
+      </view>
+      <view class="hp klass" bindtap="openKlass">
+        <text class="hp-n">{{klassText || '设置班级'}}</text>
+        <text class="hp-arr">{{klassText ? '' : '›'}}</text>
+      </view>
+    </view>
+
+    <!-- 已登录但还没有头像昵称：一条轻提示，别做成警告 -->
+    <view class="h-need" wx:if="{{user && needProfile}}" bindtap="openAuth">
+      <text class="hn-dot">·</text>
+      <text class="hn-tx">用微信头像和昵称，更像你自己</text>
+      <text class="hn-go">去设置 ›</text>
+    </view>
+
+    <view class="h-btn" wx:if="{{!user}}" bindtap="onWechatLogin">
+      <text class="h-btn-t">{{loggingIn ? '登录中…' : '微信授权登录'}}</text>
+      <text class="h-btn-arr" wx:if="{{!loggingIn}}">›</text>
+    </view>
+    <view class="h-out" wx:else bindtap="onLogout">退出登录</view>
+
+    <view class="h-foot">
+      <text class="hf-dot"></text>
+      <text class="hf-tx">{{user ? (isLocal ? '仅存本机 · 未绑定微信账号，换设备会丢' : '头像昵称已绑定微信账号 · 换设备登录自动恢复') : '不授权也能用，登录只为记住你的对话'}}</text>
+    </view>
+  </view>
+
+  <!-- 云端登录不可用时的提示 + 备用入口 -->
+  <view class="tip" wx:if="{{loginError}}">
+    <view class="tip-row">
+      <text class="tip-badge">!</text>
+      <text class="tip-tx">{{loginError}}</text>
+    </view>
+    <view class="tip-act" bindtap="openAuth">
+      <text>改用微信头像昵称登录</text>
+      <text class="tip-act-arr">›</text>
+    </view>
+  </view>
+
+  <!-- 数据概览：都是真实数字 -->
+  <view class="stats">
+    <view class="st">
+      <view class="st-n">{{kbSize}}</view>
+      <view class="st-s">条知识入库</view>
+    </view>
+    <view class="st mid">
+      <view class="st-n">{{platCount}}</view>
+      <view class="st-s">个真实平台</view>
+    </view>
+    <view class="st">
+      <view class="st-n">4</view>
+      <view class="st-s">类问答板块</view>
+    </view>
+  </view>
+
+  <!-- 我的记录：站内办事留下的痕迹 -->
+  <view class="sec-h"><view class="sec-title">我的记录</view><view class="sec-e">RECORDS</view></view>
+  <view class="list card">
+    <view class="row" bindtap="openKlass">
+      <view class="ri blue"><image class="ri-img" src="/images/svc/cap.png" mode="aspectFit" /></view>
+      <view class="rt"><view class="rn">我的班级</view><view class="rs">{{klassText ? (klassText + ' · 索引里 ' + klassList.length + ' 个班') : '还没设置 · 建一个或选一个建过的'}}</view></view>
+      <view class="r-go">›</view>
+    </view>
+    <view class="row" bindtap="openFb">
+      <view class="ri mint"><image class="ri-img" src="/images/svc/pencil.png" mode="aspectFit" /></view>
+      <view class="rt"><view class="rn">意见反馈</view><view class="rs">纠错 · 建议 · 资料补充{{fedCount ? ' · 已提 ' + fedCount + ' 条' : ''}}</view></view>
+      <view class="r-go">›</view>
+    </view>
+    <view class="row" bindtap="goReport">
+      <view class="ri blue"><image class="ri-img" src="/images/svc/clipboard.png" mode="aspectFit" /></view>
+      <view class="rt"><view class="rn">办事指南</view><view class="rs">请假 · 缓考 · 重修 · 教材 · 借书</view></view>
+      <view class="r-go">›</view>
+    </view>
+    <view class="row" bindtap="goBoard">
+      <view class="ri mint"><image class="ri-img" src="/images/svc/mega.png" mode="aspectFit" /></view>
+      <view class="rt"><view class="rn">我的互助发布</view><view class="rs">{{postCount}} 条 · 失物 / 二手 / 求助</view></view>
+      <view class="r-go">›</view>
+    </view>
+  </view>
+
+  <!-- 荣誉说明：五个荣誉 + 我的进度 -->
+  <view class="sec-h"><view class="sec-title">荣誉说明</view><view class="sec-e">HONORS</view></view>
+  <view class="honor card">
+    <view class="hn-note">{{honorNote}}</view>
+    <view class="hg {{item.got ? 'can' : ''}} {{title && title.k === item.k ? 'showing' : ''}}"
+      wx:for="{{honors}}" wx:key="k"
+      wx:if="{{item.got}}" data-k="{{item.k}}" bindtap="pickTitle">
+      <view class="hg-m {{item.metal}}">
+        <image wx:if="{{item.cupSrc}}" class="hg-cup" src="{{item.cupSrc}}" mode="aspectFit" />
+        <text wx:else class="hg-cup-ph">✦</text>
+      </view>
+      <view class="hg-b">
+        <view class="hg-n">{{item.n}}<text class="hg-tag">已获得</text><text class="hg-show" wx:if="{{title && title.k === item.k}}">展示中</text></view>
+        <view class="hg-d">{{item.d}}</view>
+        <view class="hg-p">{{item.long}}</view>
+      </view>
+      <text class="hg-pick">{{title && title.k === item.k ? '✓' : '选它 ›'}}</text>
+    </view>
+    <!-- 未获得的也列出来，但不可选，让人看清还差什么 -->
+    <view class="hg off" wx:for="{{honors}}" wx:key="k" wx:if="{{!item.got}}">
+      <view class="hg-m {{item.metal}} off">
+        <image wx:if="{{item.cupSrc}}" class="hg-cup" src="{{item.cupSrc}}" mode="aspectFit" />
+        <text wx:else class="hg-cup-ph">✦</text>
+      </view>
+      <view class="hg-b">
+        <view class="hg-n">{{item.n}}</view>
+        <view class="hg-d">{{item.d}}</view>
+        <view class="hg-p">{{item.prog}}</view>
+      </view>
+    </view>
+    <view class="hg hg-auto" data-k="" bindtap="pickTitle">
+      <view class="hg-m auto"><text class="hg-auto-em">✦</text></view>
+      <view class="hg-b">
+        <view class="hg-n">自动 · 最高一级<text class="hg-show" wx:if="{{autoCur}}">展示中</text></view>
+        <view class="hg-p">金 › 银 › 铜，随新获得自动升级</view>
+      </view>
+      <text class="hg-pick">{{autoCur ? '✓' : '选它 ›'}}</text>
+    </view>
+    <view class="hn-foot">只显示一枚头衔：直接点上面任意一枚「已获得」即可换成它，或选「自动」取最高一级（金 › 银 › 铜）。选择按你的微信账号唯一键保存，换设备登录仍是这枚；发帖时也带上它。</view>
+  </view>
+
+  <!-- 运行状态：把四个外部依赖逐项探一遍 -->
+  <view class="sec-h"><view class="sec-title">运行状态</view><view class="sec-e">SYSTEM</view></view>
+  <view class="chk card">
+    <view class="chk-h" bindtap="runCheck">
+      <view class="chk-l">
+        <view class="chk-t">环境自检</view>
+        <view class="chk-s">云开发 / 云函数 / 数据库 / 大模型 / 汇率逐项探一遍</view>
+      </view>
+      <view class="chk-b {{checks.length && okCount === total ? 'all' : ''}}">{{checking ? '检测中…' : (checks.length ? okCount + '/' + total + ' 项正常' : '开始检测')}}</view>
+    </view>
+    <view class="chk-list" wx:if="{{checks.length}}">
+      <view class="chk-i" wx:for="{{checks}}" wx:key="n">
+        <text class="chk-dot {{item.ok ? 'ok' : 'bad'}}">{{item.ok ? '✓' : '!'}}</text>
+        <view class="chk-tx">
+          <view class="chk-n">{{item.n}}</view>
+          <view class="chk-d">{{item.d}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关于 -->
+  <view class="sec-h"><view class="sec-title">关于</view><view class="sec-e">ABOUT</view></view>
+  <view class="list card">
+    <view class="row">
+      <view class="ri blue"><text class="ri-em">🏫</text></view>
+      <view class="rt"><view class="rn">学校</view><view class="rs">南宁数字科技学院 · 吉利创办</view></view>
+    </view>
+    <view class="row">
+      <view class="ri"><image class="ri-img" src="/images/brand/xiaoqi-head.png" mode="aspectFill" /></view>
+      <view class="rt"><view class="rn">智能引擎</view><view class="rs">{{modelName || '云端大模型（连接中）'}}</view></view>
+    </view>
+    <view class="row">
+      <view class="ri"><image class="ri-img sm" src="/images/brand/meituan.png" mode="aspectFit" /></view>
+      <view class="rt"><view class="rn">真实对接</view><view class="rs">美团外卖 · 菜鸟驿站 · 易校园 · 实时汇率</view></view>
+      <view class="r-icons">
+        <image class="r-ic" src="/images/brand/cainiao.png" mode="aspectFit" />
+        <image class="r-ic" src="/images/brand/asean.png" mode="aspectFit" />
+      </view>
+    </view>
+  </view>
+
+  <view class="ver">数科云栖校园 v1.0.0</view>
+</view>
+
+<!-- 头衔选择弹层：只显示一枚，从已获得里挑 -->
+<view class="sheet-mask" wx:if="{{showTitle}}" bindtap="closeTitle"></view>
+<view class="sheet-fill" wx:if="{{showTitle}}"></view>
+<view class="sheet" wx:if="{{showTitle}}" catchtap="noop">
+  <view class="sh-hd">
+    <view class="sh-t">选择显示的头衔</view>
+    <view class="sh-x" bindtap="closeTitle">✕</view>
+  </view>
+  <view class="sh-s">只显示一枚。从你已经获得的头衔里挑一枚，头像下方和发帖身份都会用它；默认自动取最高一级。</view>
+
+  <scroll-view class="kl-scroll" scroll-y>
+    <view class="tt-opts">
+      <view class="tt-opt {{item.cur ? 'on' : ''}}" wx:for="{{titleOptions}}" wx:key="k" data-k="{{item.k}}" bindtap="pickTitle">
+        <image class="tt-cup {{item.metal}}" src="{{item.cupSrc}}" mode="aspectFit" wx:if="{{item.cupSrc}}" />
+        <text wx:else class="tt-cup-ph">✦</text>
+        <view class="tt-b">
+          <view class="tt-n">{{item.n}}</view>
+          <view class="tt-d">{{item.metalName}} · {{item.d}}</view>
+        </view>
+        <text class="tt-ck">{{item.cur ? '✓' : ''}}</text>
+      </view>
+      <view class="tt-auto {{autoCur ? 'on' : ''}}" data-k="" bindtap="pickTitle">
+        <text class="tt-auto-em">✦</text>
+        <view class="tt-b">
+          <view class="tt-n">自动 · 最高一级</view>
+          <view class="tt-d">金 › 银 › 铜，随新获得自动升级</view>
+        </view>
+        <text class="tt-ck">{{autoCur ? '✓' : ''}}</text>
+      </view>
+    </view>
+  </scroll-view>
+  <view class="sh-tip">选中的头衔若以后不再满足条件，会自动回到最高一级，不会一直挂着过期的。</view>
+</view>
+
+<!-- 微信授权弹层：浮在自定义 tabBar 之上 -->
+<view class="sheet-mask" wx:if="{{showAuth}}" bindtap="closeAuth"></view>
+<view class="sheet-fill" wx:if="{{showAuth}}"></view>
+<view class="sheet" wx:if="{{showAuth}}" catchtap="noop">
+  <view class="sh-hd">
+  <view class="sh-t">绑定微信身份</view>
+  <view class="sh-x" bindtap="closeAuth">✕</view>
+</view>
+
+<view class="sh-lead">微信不再支持静默授权，头像昵称需要你点一下确认。选定后会绑定到你的微信账号，换设备登录也能恢复。</view>
+
+  <view class="sh-av-wrap">
+    <image wx:if="{{draftAvatar}}" class="sh-av-img" src="{{draftAvatar}}" mode="aspectFill" />
+    <view wx:else class="sh-av-ph"><text class="sh-av-ph-tx">头</text></view>
+    <view class="sh-av-edit">{{draftAvatar ? '换' : '选'}}</view>
+    <button class="sh-av-hit" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar"></button>
+  </view>
+  <view class="sh-av-cap">{{draftAvatar ? '已用微信头像，可点一下更换' : '点头像，用你的微信头像'}}</view>
+
+  <input class="sh-nick" type="nickname" placeholder="点击填微信昵称" placeholder-class="sh-nick-ph"
+    value="{{draftNick}}" bindinput="onNickInput" />
+
+  <view class="sh-btn {{saving ? 'dis' : ''}}" bindtap="saveLocal">{{saving ? '绑定中…' : '确认绑定'}}</view>
+  <view class="sh-tip">仅用微信头像和昵称 · 不读手机号 · 绑定信息只用于显示你的身份</view>
+</view>
+
+<!-- 班级索引弹层：选一个建过的，或新建一个 -->
+<view class="sheet-mask" wx:if="{{showKlass}}" bindtap="closeKlass"></view>
+<view class="sheet-fill" wx:if="{{showKlass}}"></view>
+<view class="sheet tall" wx:if="{{showKlass}}" catchtap="noop">
+  <view class="sh-hd">
+    <view class="sh-t">我的班级</view>
+    <view class="sh-x" bindtap="closeKlass">✕</view>
+  </view>
+  <view class="sh-s">写法照《23计科4班》：入学年份两位 + 专业 + 班号；只写《23计科》就是只到年级专业。全称简称都认，建过的班不会再建第二个。也可以选「不设班级」用公共课表。</view>
+
+  <scroll-view class="kl-scroll" scroll-y>
+    <view class="kl-chips">
+      <view class="kl-chip {{item.cur ? 'on' : ''}}" wx:for="{{klassList}}" wx:key="text" data-k="{{item.k}}" bindtap="pickKlass">{{item.text}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="kl-input">
+    <input class="kl-in" value="{{klassInput}}" placeholder="如 23计科4班" placeholder-class="sh-nick-ph" maxlength="24" bindinput="onKlassInput" />
+    <view class="kl-add" bindtap="createKlass">创建</view>
+  </view>
+  <view class="kl-err" wx:if="{{klassErr}}">{{klassErr}}</view>
+  <view class="kl-ok" wx:if="{{klassNotice}}">{{klassNotice}}</view>
+  <view class="sh-tip">班级只存本机，切班级会换对应那份课表；选「不设班级」则用公共课表。发帖时标在作者后面。</view>
+</view>
+
+<!-- 反馈弹层：纠错 / 建议 / 资料补充，提交即计入荣誉 -->
+<view class="sheet-mask" wx:if="{{showFb}}" bindtap="closeFb"></view>
+<view class="sheet-fill" wx:if="{{showFb}}"></view>
+<view class="sheet tall" wx:if="{{showFb}}" catchtap="noop">
+  <view class="sh-hd">
+    <view class="sh-t">意见反馈</view>
+    <view class="sh-x" bindtap="closeFb">✕</view>
+  </view>
+
+  <view class="fb-types">
+    <view class="fb-t {{fbType === index ? 'on' : ''}}" wx:for="{{fbTypes}}" wx:key="k" data-i="{{index}}" bindtap="pickFbType">
+      <view class="fb-tn">{{item.n}}</view>
+      <view class="fb-td">{{item.d}}</view>
+    </view>
+  </view>
+
+  <input class="fb-where" value="{{fbWhere}}" placeholder="哪一页 / 哪一条（选填）" placeholder-class="sh-nick-ph" maxlength="40" bindinput="onFbWhere" />
+  <textarea class="fb-ta" value="{{fbText}}" placeholder="{{fbTypes[fbType].ph}}" placeholder-class="sh-nick-ph" maxlength="300" bindinput="onFbText" />
+  <view class="fb-tip" wx:if="{{fbTip}}">{{fbTip}}</view>
+
+  <view class="sh-btn {{fbBusy ? 'dis' : ''}}" bindtap="submitFb">{{fbBusy ? '提交中…' : '提交反馈'}}</view>
+  <view class="fb-export" bindtap="exportFb">📋 复制全部反馈给管理员</view>
+  <view class="sh-tip">提交后计入「{{fbTypes[fbType].n}}」，对应荣誉会自己亮起来；云端没通时先存本机。所有反馈统一送管理员后台，点上面一行复制后可在后台网页粘贴查看。</view>
+</view>

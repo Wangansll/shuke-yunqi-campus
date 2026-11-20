@@ -1,0 +1,171 @@
+<!-- pages/canteen/index.wxml —— 校内食堂 / 校外外卖 两个视图 -->
+<view class="wrap">
+
+  <view class="hero">
+    <view class="h-glow"></view>
+    <view class="h-kicker">{{view === 'hall' ? '五个食堂 · 站内对比' : '校园周边 · 真实店铺'}}</view>
+    <view class="h-title">{{view === 'hall' ? '今天去哪吃' : '外卖挑哪家'}}</view>
+    <view class="h-src">{{view === 'hall' ? source.t + ' · ' + source.d : outSource.t + ' · ' + outSource.d}}</view>
+  </view>
+
+  <view class="vtabs">
+    <view class="vtab {{view === 'hall' ? 'on' : ''}}" data-v="hall" bindtap="switchView">校内食堂</view>
+    <view class="vtab {{view === 'out' ? 'on' : ''}}" data-v="out" bindtap="switchView">校外外卖 · {{outCount}}</view>
+  </view>
+
+  <!-- ============ 校内食堂 ============ -->
+  <block wx:if="{{view === 'hall'}}">
+
+    <scroll-view class="pills" scroll-x show-scrollbar="{{false}}" enable-flex>
+      <view wx:for="{{cards}}" wx:key="id" class="pill {{cur===index?'on':''}}" data-i="{{index}}" bindtap="pick">
+        <text class="p-n">{{item.name}}</text>
+        <text class="p-a">{{item.area}} · {{item.total}} 家</text>
+      </view>
+    </scroll-view>
+
+    <view class="card">
+      <view class="c-hd">
+        <text class="c-t">{{curCard.name}}</text>
+        <text class="c-badge">{{curCard.area}}</text>
+      </view>
+      <view class="c-extra"><text class="c-k">月售前二</text>{{curCard.top}}</view>
+      <view class="c-metrics">
+        <view class="m">
+          <text class="m-v">{{curCard.total}}</text>
+          <text class="m-k">档口</text>
+        </view>
+        <view class="m">
+          <text class="m-v">{{curCard.groups.length}}</text>
+          <text class="m-k">品类</text>
+        </view>
+        <view class="m">
+          <text class="m-v">{{curCard.score}}</text>
+          <text class="m-k">门店均分</text>
+        </view>
+        <view class="m">
+          <text class="m-v {{curCard.avg?'':'dim'}}">{{curCard.avg || '—'}}</text>
+          <text class="m-k">学生评分</text>
+        </view>
+      </view>
+      <view class="bar"><view class="bar-in" style="width:{{curCard.pct}}%"></view></view>
+      <view class="bar-tx">档口数刻度：以最多的 {{maxHall}}为 100%</view>
+    </view>
+
+    <view class="sec-h">
+      <text class="sec-t">档口清单</text>
+      <text class="sec-e">STALLS</text>
+    </view>
+    <view class="stalls">
+      <view class="sr" wx:for="{{curCard.groups}}" wx:key="c" wx:for-item="g">
+        <view class="sr-k">
+          <text class="sr-c">{{g.c}}</text>
+          <text class="sr-n">{{g.n}} 家</text>
+        </view>
+        <view class="sr-v">
+          <text class="ch" wx:for="{{g.items}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="sec-h">
+      <text class="sec-t">横向对比</text>
+      <text class="sec-e">COMPARE</text>
+    </view>
+    <view class="cmp">
+      <view class="cmp-row cmp-head">
+        <text class="cmp-k">品类</text>
+        <text class="cmp-c" wx:for="{{cards}}" wx:key="id">{{item.short}}</text>
+      </view>
+      <view class="cmp-row" wx:for="{{rows}}" wx:key="c">
+        <text class="cmp-k">{{item.s}}</text>
+        <view class="cmp-c" wx:for="{{item.cells}}" wx:key="index" wx:for-item="v">
+          <text class="cmp-v {{v===item.max && item.max>1?'hi':''}} {{v===0?'zero':''}}">{{v===0?'·':v}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="cmp-note">数字是各食堂该品类的档口家数，深色标出该品类最多的食堂（并列都标，只有 1 家或没有则不标）；「·」表示没有。品类按美团门店标签归类，门店少不代表菜少。</view>
+
+    <view class="sec-h">
+      <text class="sec-t">学生评价</text>
+      <text class="sec-e">REVIEWS</text>
+    </view>
+    <view class="rev-box">
+      <view class="rev-to">正在评价：{{curCard.name}}<text wx:if="{{curCard.avg}}" class="rev-avg"> · 学生均分 {{curCard.avg}}（{{curCard.cnt}} 条）</text></view>
+      <view class="stars">
+        <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" class="star {{myScore>=item?'on':''}}" data-s="{{item}}" bindtap="setScore">★</text>
+      </view>
+      <input class="rev-in" placeholder="这家怎么样，一句话就行" value="{{draft}}" bindinput="onDraft"
+        confirm-type="done" bindconfirm="submit" />
+      <view class="rev-btn {{draft?'':'dis'}}" bindtap="submit">{{submitting?'发布中…':'发布评价'}}</view>
+    </view>
+
+    <view wx:if="{{reviews.length}}" class="rev-list">
+      <view class="rev" wx:for="{{reviews}}" wx:key="k">
+        <view class="r-hd">
+          <text class="r-h">{{item.hall}}</text>
+          <text class="r-s">{{item.stars}}</text>
+        </view>
+        <view class="r-t">{{item.text}}</view>
+        <view class="r-f">{{item.when}}<text wx:if="{{item.local}}" class="r-local"> · 本机暂存</text></view>
+      </view>
+    </view>
+    <view wx:else class="rev-empty">还没有评价，第一条由你写。</view>
+
+    <view class="cta">
+      <view class="cta-a" bindtap="askErrand">让同学带一份</view>
+      <view class="cta-b" bindtap="goMeituanApp">点校内外卖</view>
+    </view>
+
+    <view class="foot">
+      档口名来自{{source.t}}（{{source.d}}），同名档口只列在最先出现的食堂。档口会随学期调整，以现场为准。
+    </view>
+  </block>
+
+  <!-- ============ 校外外卖 ============ -->
+  <block wx:else>
+
+    <view class="out-bar">
+      <text class="ob-k">位置锚点</text>
+      <text class="ob-v">{{outSource.anchor}}</text>
+    </view>
+    <view class="out-tip">{{outCount}} 家店按品类分组，评分 / 月售 / 距离 / 起送 / 配送费全部是美团返回的原值。点店铺复制店名，去美团搜同名下单。</view>
+
+    <view class="kind-sec" wx:for="{{outGroups}}" wx:key="k" wx:for-item="g">
+      <view class="kind-hd">
+        <text class="kind-t">{{g.k}}</text>
+        <text class="kind-n">{{g.n}} 家</text>
+      </view>
+
+      <view class="shop" wx:for="{{g.items}}" wx:key="id" wx:for-item="s" data-i="{{s.id}}" bindtap="openShop">
+        <image class="sh-img" src="{{s.img}}" mode="aspectFill" lazy-load />
+        <view class="sh-main">
+          <view class="sh-name">{{s.name}}</view>
+          <view class="sh-meta">
+            <text class="sh-score" wx:if="{{s.score}}">★ {{s.score}}</text>
+            <text class="sh-sales" wx:if="{{s.sales}}">{{s.sales}}</text>
+            <text class="sh-dist">{{s.dist}}</text>
+          </view>
+          <view class="sh-fee">
+            <text wx:if="{{s.minPrice}}">{{s.minPrice}}</text>
+            <text wx:if="{{s.shipFee}}"> · {{s.shipFee}}</text>
+            <text wx:if="{{s.eta}}"> · {{s.eta}}</text>
+          </view>
+        </view>
+        <view class="sh-go">去点 ›</view>
+      </view>
+    </view>
+
+    <view class="food-entry" bindtap="goFood">
+      <view class="fe-l">
+        <text class="fe-t">美食鉴赏</text>
+        <text class="fe-s">校内档口与校门口的 {{food.dishes}} 道菜 + {{food.reviews}} 条店铺评价，不看价格、不点单</text>
+      </view>
+      <text class="fe-go">逛逛 ›</text>
+    </view>
+
+    <view class="foot">
+      数据为 {{outSource.d}} 的一次性快照，不是实时接口：店铺上下架、价格与配送费都会变，下单前以美团内显示为准。菜品明细需要逐店登录加载，本次未抓。
+    </view>
+  </block>
+
+</view>

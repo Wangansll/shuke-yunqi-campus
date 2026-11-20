@@ -1,0 +1,146 @@
+<!-- pages/life/index.wxml —— 校园导览 -->
+<view class="page">
+  <view class="top">
+    <view class="t1">校园导览</view>
+    <view class="t2">四个岭怎么分、哪口锅好吃、车几点有、电话打给谁</view>
+  </view>
+
+  <view class="seg">
+    <view wx:for="{{tabs}}" wx:key="k" class="seg-i {{tab===item.k?'on':''}}" data-k="{{item.k}}" bindtap="pickTab">{{item.n}}</view>
+  </view>
+
+  <!-- ========== 分区 ========== -->
+  <block wx:if="{{tab==='zone'}}">
+    <view class="grid4">
+      <view class="zone-b" wx:for="{{zones}}" wx:key="k">
+        <view class="zb-n">{{item.name}}</view>
+        <view class="zb-s">{{item.items.length}} 处设施</view>
+      </view>
+    </view>
+    <view class="note">只表示「哪个岭有什么」，不是比例地图；学校官方未公开精确坐标，本应用不画假定位。</view>
+
+    <!-- 楼名对照：学校换过楼名，考试安排表用的是新名 -->
+    <view class="sec-t">楼名与门名对照</view>
+    <view class="card pad0">
+      <view class="kv row" wx:for="{{buildings}}" wx:key="now">
+        <text class="k">{{item.old}}</text>
+        <text class="v">{{item.now}}<text class="v-s"> · {{item.use}}</text></text>
+      </view>
+    </view>
+    <view class="note">依据校园楼栋标识牌，其中吉美楼、吉贤楼、吉智楼与学校《考试日程安排表》原文「吉贤楼（原 2 号教学楼）」一致。教室号仍以安排表为准。</view>
+
+    <view class="zcard" wx:for="{{zones}}" wx:key="k">
+      <view class="z-h">
+        <text class="z-n">{{item.name}}</text>
+        <text class="z-a">{{item.alias}}</text>
+      </view>
+      <view class="it" wx:for="{{item.items}}" wx:for-item="f" wx:key="n" data-tel="{{f.tel}}" bindtap="dial">
+        <view class="it-ic">{{f.icon}}</view>
+        <view class="it-tx">
+          <view class="it-n">{{f.n}}<text class="it-c">{{f.c}}</text></view>
+          <view class="it-d">{{f.d}}</view>
+        </view>
+        <view class="it-go" wx:if="{{f.tel}}">拨号 ›</view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ========== 食堂 ========== -->
+  <block wx:if="{{tab==='food'}}">
+    <view class="ccard" wx:for="{{canteens}}" wx:key="name">
+      <view class="c-h">
+        <view class="c-n">{{item.name}}</view>
+        <view class="c-zone">{{item.zone}}</view>
+      </view>
+      <view class="c-meta">
+        <text class="c-num">{{item.n}}</text>
+        <text class="c-unit">家档口</text>
+        <text class="c-dot">·</text>
+        <text class="c-score">均分 {{item.score}}</text>
+      </view>
+      <view class="c-tag" wx:if="{{item.n > 3}}">{{item.tag}}</view>
+      <view class="c-cats" wx:if="{{item.cats.length}}">
+        <text class="c-cat" wx:for="{{item.cats}}" wx:for-item="ct" wx:key="*this">{{ct}}</text>
+      </view>
+      <view class="chips">
+        <view class="chip" wx:for="{{item.open ? item.stalls : item.show}}" wx:for-item="s" wx:key="*this" data-c="{{item.zone}}" data-s="{{s}}" bindtap="askStall">{{s}}</view>
+      </view>
+      <view class="c-more" wx:if="{{item.stalls.length > 8}}" data-i="{{index}}" bindtap="toggleStalls">
+        {{item.open ? '收起' : '展开全部 ' + item.n + ' 家'}}
+      </view>
+    </view>
+    <view class="note">档口名单来自校内美团门店数据（抓取 2026-11-18），同名档口只列在最先出现的食堂；评分是该食堂各档口的均值，价格与营业状态以现场为准。点档口可以直接拿去问小栖。</view>
+  </block>
+
+  <!-- ========== 出行 ========== -->
+  <block wx:if="{{tab==='go'}}">
+    <view class="bigcard">
+      <view class="bc-n">{{shuttle.name}}<text class="bc-brand">{{shuttle.brand}}</text></view>
+      <view class="bc-time">{{shuttle.hours}}</view>
+      <view class="bc-d">覆盖：{{shuttle.cover}}</view>
+      <view class="bc-note">{{shuttle.note}}</view>
+    </view>
+
+    <view class="sec-t">共享电单车</view>
+    <view class="card">
+      <view class="r-n">{{bike.name}} · {{bike.brand}}</view>
+      <view class="rule" wx:for="{{bike.points}}" wx:key="*this">
+        <text class="rdot"></text><text class="rtx">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="sec-t">快递与校内站点</view>
+    <view class="card">
+      <view class="kv"><text class="k">快递服务中心</text><text class="v">一岭 · 吉海门停车场旁</text></view>
+      <view class="kv"><text class="k">安保中心</text><text class="v">三岭 · 吉山门出口旁</text></view>
+      <view class="kv"><text class="k">医务室</text><text class="v">一岭 · 三栋宿舍一楼</text></view>
+      <view class="kv"><text class="k">取件方式</text><text class="v">支付宝「菜鸟驿站」小程序，凭手机号查物流</text></view>
+    </view>
+  </block>
+
+  <!-- ========== 电话 ========== -->
+  <block wx:if="{{tab==='tel'}}">
+    <view class="hot">
+      <view class="hot-i" wx:for="{{hotlines}}" wx:key="n" data-tel="{{item.tel}}" bindtap="dial">
+        <view class="hi-n">{{item.n}}</view>
+        <view class="hi-t">{{item.tel}}</view>
+        <view class="hi-d">{{item.d}}</view>
+      </view>
+    </view>
+
+    <view class="sec-t">常用电话</view>
+    <view class="card pad0">
+      <view class="tel-r" wx:for="{{phones}}" wx:key="n" data-tel="{{item.tel}}" bindtap="dial">
+        <view class="tr-tx">
+          <view class="tr-n">{{item.n}}</view>
+          <view class="tr-d">{{item.d}}</view>
+        </view>
+        <view class="tr-tel">{{item.tel}}</view>
+      </view>
+    </view>
+
+    <view class="sec-t">生活时间表</view>
+    <view class="card pad0">
+      <view class="kv row" wx:for="{{timetable}}" wx:key="n">
+        <text class="k">{{item.n}}</text>
+        <text class="v">{{item.t}}</text>
+      </view>
+    </view>
+    <view class="note">以上为学校新生攻略口径，节假日与检修可能调整。</view>
+
+    <view class="lib" bindtap="toggleLib">
+      <view class="lib-h">
+        <text class="lib-t">图书馆借还规则</text>
+        <text class="lib-x">{{openLib ? '收起' : '展开'}}</text>
+      </view>
+      <view class="lib-b" wx:if="{{openLib}}">
+        <view class="kv"><text class="k">借书</text><text class="v">{{library.borrow}}</text></view>
+        <view class="kv"><text class="k">续借</text><text class="v">{{library.renew}}</text></view>
+        <view class="kv"><text class="k">逾期</text><text class="v">{{library.overdue}}</text></view>
+        <view class="kv"><text class="k">开馆</text><text class="v">{{library.hours}}</text></view>
+      </view>
+    </view>
+  </block>
+
+  <view class="foot">分区、电话、时刻来自学校公众号公开内容；食堂档口来自校内美团门店快照（2026-11-18）</view>
+</view>

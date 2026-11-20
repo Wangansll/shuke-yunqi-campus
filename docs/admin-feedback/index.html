@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>数科云栖校园 · 意见反馈管理后台</title>
+<style>
+  :root {
+    --bg: #0f1420; --panel: #171e2e; --panel2: #1d263a; --line: #2a3550;
+    --text: #e8edf7; --sub: #9aa8c2; --dim: #6b7894;
+    --blue: #4f8cff; --green: #2ecc9b; --amber: #f5b544; --red: #ff6b6b;
+    --fix: #ff8a8a; --idea: #5aa9ff; --docs: #4fd1a5;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 14px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 60px; }
+  h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: .5px; }
+  .sub { color: var(--sub); font-size: 13px; margin-bottom: 24px; line-height: 1.6; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 18px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tab { padding: 9px 18px; border-radius: 9px; background: var(--panel2); border: 1px solid var(--line); color: var(--sub); cursor: pointer; font-size: 13px; }
+  .tab.on { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+  textarea, input { width: 100%; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; color: var(--text); padding: 12px 14px; font-size: 13px; font-family: inherit; outline: none; }
+  textarea:focus, input:focus { border-color: var(--blue); }
+  textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+  .row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  .btn { padding: 10px 20px; border-radius: 9px; background: var(--blue); border: none; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn.ghost { background: var(--panel2); border: 1px solid var(--line); color: var(--sub); }
+  .hint { color: var(--dim); font-size: 12px; line-height: 1.7; margin-top: 10px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .stat .n { font-size: 26px; font-weight: 800; }
+  .stat .l { color: var(--sub); font-size: 12px; margin-top: 4px; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .chip { padding: 6px 14px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); color: var(--sub); font-size: 12px; cursor: pointer; }
+  .chip.on { color: #fff; border-color: var(--blue); background: rgba(79,140,255,.2); }
+  .list { display: flex; flex-direction: column; gap: 10px; }
+  .item { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .item.done { opacity: .55; }
+  .ih { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .tag { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+  .tag.fix { color: var(--fix); background: rgba(255,138,138,.14); }
+  .tag.idea { color: var(--idea); background: rgba(90,169,255,.14); }
+  .tag.docs { color: var(--docs); background: rgba(79,209,165,.14); }
+  .where { color: var(--sub); font-size: 12px; }
+  .time { color: var(--dim); font-size: 11px; margin-left: auto; }
+  .text { margin-top: 10px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; font-size: 13px; }
+  .acts { margin-top: 10px; display: flex; gap: 8px; }
+  .mini { padding: 5px 12px; font-size: 11px; border-radius: 7px; background: var(--panel2); border: 1px solid var(--line); color: var(--sub); cursor: pointer; }
+  .mini.ok { color: var(--green); border-color: rgba(46,204,155,.4); }
+  .empty { text-align: center; color: var(--dim); padding: 50px 0; }
+  .bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+  .bar .count { color: var(--sub); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>数科云栖校园 · 意见反馈管理后台</h1>
+  <div class="sub">统一查看全校提交的纠错、建议与资料补充。反馈来自小程序「我的 → 意见反馈」，课表分享也会作为资料补充汇入这里。</div>
+
+  <div class="tabs">
+    <div class="tab on" data-mode="paste">粘贴数据</div>
+    <div class="tab" data-mode="api">接口拉取</div>
+  </div>
+
+  <div class="panel" id="pastePane">
+    <textarea id="pasteBox" placeholder="在小程序「我的 → 意见反馈 → 复制全部反馈给管理员」复制后，粘贴到这里。也支持直接粘贴云端 /api/posts 返回的 JSON 数组。"></textarea>
+    <div class="row">
+      <button class="btn" id="loadPaste">解析并载入</button>
+      <button class="btn ghost" id="loadDemo">载入示例查看效果</button>
+      <button class="btn ghost" id="clearAll">清空</button>
+    </div>
+    <div class="hint">数据只在你浏览器里解析和保存（处理状态存本机 localStorage），不会上传到任何服务器。</div>
+  </div>
+
+  <div class="panel" id="apiPane" style="display:none">
+    <input id="apiUrl" placeholder="云托管公开地址，如 https://xxx.ap-shanghai.app.tcloudbase.com/api/posts?cat=feedback" />
+    <div class="row">
+      <button class="btn" id="loadApi">拉取反馈</button>
+      <span class="hint" style="margin:0">接口需允许跨域访问；无公网地址时用「粘贴数据」模式。</span>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="panel">
+    <div class="bar">
+      <div class="filters" id="filters"></div>
+      <div class="count" id="count"></div>
+    </div>
+    <div class="list" id="list"><div class="empty">还没有反馈，先粘贴数据或拉取接口。</div></div>
+  </div>
+</div>
+
+<script>
+const KEY_DONE = 'qiyun_fb_done_v1'
+const KEY_DATA = 'qiyun_fb_data_v1'
+let DATA = []
+let FILTER = 'all'
+
+const TYPE_NAME = { fix: '纠错', idea: '建议', docs: '资料补充' }
+const TYPE_KEY = { '纠错': 'fix', '建议': 'idea', '资料补充': 'docs' }
+
+function loadStore() {
+  try { DATA = JSON.parse(localStorage.getItem(KEY_DATA) || '[]') } catch (e) { DATA = [] }
+}
+function saveStore() {
+  try { localStorage.setItem(KEY_DATA, JSON.stringify(DATA)) } catch (e) {}
+}
+function doneMap() {
+  try { return JSON.parse(localStorage.getItem(KEY_DONE) || '{}') } catch (e) { return {} }
+}
+function idOf(x) { return x.id || x._id || x.no || ((x.ts || '') + '|' + (x.text || x.desc || '').slice(0, 20)) }
+
+// 兼容两种来源：本机导出的 {items:[{type,text,where,ts}]}，云端 /api/posts 的 [{cat,type,title,desc,ts}]
+function normalize(raw) {
+  let arr = raw
+  if (raw && !Array.isArray(raw) && Array.isArray(raw.items)) arr = raw.items
+  if (!Array.isArray(arr)) throw new Error('不是可识别的 JSON：需要数组或 {items:[...]}')
+  return arr.filter(x => x && typeof x === 'object').map(x => {
+    let t = x.type
+    if (!t && x.cat && TYPE_NAME[x.cat]) t = x.cat
+    if (!t && x.title) {
+      const m = String(x.title).match(/【(纠错|建议|资料补充)】/)
+      if (m) t = TYPE_KEY[m[1]]
+    }
+    return {
+      id: idOf(x),
+      type: t || 'idea',
+      typeName: TYPE_NAME[t] || (x.typeName || '反馈'),
+      where: x.where || (x.title ? String(x.title).replace(/^【[^】]*】/, '') : ''),
+      text: x.text || x.desc || '',
+      ts: x.ts || x.exportedAt || 0,
+    }
+  })
+}
+
+function fmtTs(ts) {
+  if (!ts) return ''
+  const d = new Date(ts)
+  const p = n => (n < 10 ? '0' : '') + n
+  return (d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())
+}
+
+function render() {
+  const dm = doneMap()
+  // 统计
+  const cnt = { all: DATA.length, fix: 0, idea: 0, docs: 0 }
+  DATA.forEach(x => { if (cnt[x.type] !== undefined) cnt[x.type]++ })
+  document.getElementById('stats').innerHTML = [
+    ['全部反馈', cnt.all, 'var(--blue)'],
+    ['纠错', cnt.fix, 'var(--fix)'],
+    ['建议', cnt.idea, 'var(--idea)'],
+    ['资料补充', cnt.docs, 'var(--docs)'],
+  ].map(([l, n, c]) => `<div class="stat"><div class="n" style="color:${c}">${n}</div><div class="l">${l}</div></div>`).join('')
+
+  // 筛选
+  const chips = [['all','全部'],['fix','纠错'],['idea','建议'],['docs','资料补充'],['todo','未处理']]
+  document.getElementById('filters').innerHTML = chips.map(([k,n]) =>
+    `<div class="chip ${FILTER===k?'on':''}" data-f="${k}">${n}</div>`).join('')
+  document.querySelectorAll('.chip').forEach(el => el.onclick = () => { FILTER = el.dataset.f; render() })
+
+  const shown = DATA.filter(x => FILTER === 'all' || (FILTER === 'todo' ? !dm[x.id] : x.type === FILTER))
+  document.getElementById('count').textContent = `显示 ${shown.length} / ${DATA.length} 条`
+  if (!shown.length) { document.getElementById('list').innerHTML = '<div class="empty">这个筛选下没有反馈。</div>'; return }
+
+  document.getElementById('list').innerHTML = shown.map(x => {
+    const done = !!dm[x.id]
+    return `<div class="item ${done?'done':''}">
+      <div class="ih">
+        <span class="tag ${x.type}">${x.typeName}</span>
+        <span class="where">${esc(x.where || '未标注位置')}</span>
+        <span class="time">${fmtTs(x.ts)}</span>
+      </div>
+      <div class="text">${esc(x.text || '')}</div>
+      <div class="acts">
+        <button class="mini ${done?'ok':''}" data-t="${esc(x.id)}">${done?'✓ 已处理':'标为已处理'}</button>
+      </div>
+    </div>`
+  }).join('')
+  document.querySelectorAll('.mini[data-t]').forEach(el => el.onclick = () => {
+    const m = doneMap(); const id = el.dataset.t
+    if (m[id]) delete m[id]; else m[id] = 1
+    try { localStorage.setItem(KEY_DONE, JSON.stringify(m)) } catch (e) {}
+    render()
+  })
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) }
+
+// tabs
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'))
+  t.classList.add('on')
+  const api = t.dataset.mode === 'api'
+  document.getElementById('pastePane').style.display = api ? 'none' : ''
+  document.getElementById('apiPane').style.display = api ? '' : 'none'
+})
+
+document.getElementById('loadPaste').onclick = () => {
+  const raw = document.getElementById('pasteBox').value.trim()
+  if (!raw) { alert('先粘贴反馈数据'); return }
+  try {
+    DATA = normalize(JSON.parse(raw)); saveStore(); render()
+    alert('已载入 ' + DATA.length + ' 条反馈')
+  } catch (e) { alert('解析失败：' + e.message) }
+}
+document.getElementById('loadDemo').onclick = () => {
+  DATA = normalize([
+    { type: 'fix', where: '课表页 · 吉芯楼', text: '嵌入式综合设计的地点显示成吉芯楼103，实际是吉芯楼203，请订正。', ts: Date.now() - 86400000 },
+    { type: 'idea', where: '吉利专区', text: '社招岗位能不能按城市再筛一次，现在滑到底才看到几个。', ts: Date.now() - 3600000 },
+    { type: 'docs', where: '课表分享 · 《23计科4班》', title: '【资料补充】《23计科4班》分享的课表 · 5 门', desc: '周一 第1大节 数据结构\n周三 第3大节 软件工程', ts: Date.now() },
+  ]); saveStore(); render()
+}
+document.getElementById('clearAll').onclick = () => {
+  if (!confirm('清空后台里的反馈数据？（只清本机浏览器）')) return
+  DATA = []; saveStore(); render()
+}
+document.getElementById('loadApi').onclick = async () => {
+  const url = document.getElementById('apiUrl').value.trim()
+  if (!url) { alert('先填接口地址'); return }
+  try {
+    const res = await fetch(url, { headers: { 'X-WX-SERVICE': 'express-tmya' } })
+    const json = await res.json()
+    DATA = normalize(json); saveStore(); render()
+    alert('拉取到 ' + DATA.length + ' 条反馈')
+  } catch (e) { alert('拉取失败：' + e.message + '\n可改用「粘贴数据」模式') }
+}
+
+loadStore(); render()
+</script>
+</body>
+</html>

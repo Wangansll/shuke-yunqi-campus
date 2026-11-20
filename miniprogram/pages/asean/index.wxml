@@ -1,0 +1,262 @@
+<!-- pages/asean/index.wxml —— 东盟专区 -->
+<view class="page">
+  <!-- 顶部：雨林绿 + 金线，赤道弧与十国环 -->
+  <view class="hero">
+    <view class="hero-grid"></view>
+    <view class="ring r1"></view>
+    <view class="ring r2"></view>
+    <view class="ring r3"></view>
+    <view class="arc"></view>
+    <view class="glow"></view>
+
+    <view class="hero-top">
+      <view class="hero-l">
+        <view class="kicker">ASEAN · SOUTHEAST ASIA</view>
+        <view class="h1">中国<text class="h1-d">/</text>东盟</view>
+        <view class="h2">汇率 · 翻译 · 时差 · 十国速查</view>
+      </view>
+      <view class="bj">
+        <view class="bj-l">北京时间</view>
+        <view class="bj-t">{{bjTime}}</view>
+      </view>
+    </view>
+
+    <view class="eq">
+      <view class="eq-l"></view>
+      <view class="eq-ds">
+        <view class="eq-d" wx:for="{{[1,2,3,4,5,6,7,8,9,10]}}" wx:key="*this"></view>
+      </view>
+      <view class="eq-l"></view>
+    </view>
+
+    <view class="hero-tags">
+      <view class="ht" wx:for="{{heroTags}}" wx:key="*this">{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 分区导航 -->
+  <scroll-view class="nav" scroll-x enable-flex show-scrollbar="{{false}}">
+    <view class="nav-in">
+      <view class="nav-i {{curSec===item.k?'nav-hl':''}}" wx:for="{{secs}}" wx:key="k" data-k="{{item.k}}" bindtap="scrollSec">{{item.t}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 东盟指南入口 -->
+  <view class="card gdc">
+    <view class="gdc-hd">
+      <text class="gdc-t">东盟指南</text>
+      <text class="gdc-s">6 个常问问题</text>
+    </view>
+    <view class="gdc-grid">
+      <view class="gdc-cell" wx:for="{{gdTabs}}" wx:key="k" data-k="{{item.k}}" bindtap="openGd">
+        <view class="gdc-in">
+          <view class="gdc-ic">{{item.icon}}</view>
+          <view class="gdc-tx">
+            <view class="gdc-tt">{{item.t}}</view>
+            <view class="gdc-dd">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 实时汇率 ========== -->
+  <view id="sec-fx">
+    <view class="sec-h"><text class="sec-t">汇率换算</text><text class="sec-e">EXCHANGE</text><text class="rt">{{fxTime?'已更新':'获取中'}}</text></view>
+    <view class="card fx">
+      <view class="modes">
+        <view class="mode {{fxMode==='out'?'on':''}}" data-m="out" bindtap="switchMode">人民币 → 外币</view>
+        <view class="mode {{fxMode==='in'?'on':''}}" data-m="in" bindtap="switchMode">外币 → 人民币</view>
+      </view>
+
+      <view class="fx-in">
+        <text class="fx-l">{{fxMode==='out'?'金额':'数量'}}</text>
+        <input class="fx-num" type="digit" value="{{amount}}" bindinput="onAmount" />
+        <text class="fx-unit">{{fxMode==='out'?'CNY 人民币':fxCode}}</text>
+      </view>
+
+      <!-- 快捷面额 / 币种选择 -->
+      <view class="chips" wx:if="{{fxMode==='out'}}">
+        <view class="chip {{amount==item}}" wx:for="{{denoms}}" wx:key="*this" data-v="{{item}}" bindtap="setDenom">￥{{item}}</view>
+      </view>
+      <view class="chips" wx:else>
+        <view class="chip {{fxCode===item.code?'on':''}}" wx:for="{{fxList0}}" wx:key="code" data-c="{{item.code}}" bindtap="pickFx">{{item.code}}</view>
+      </view>
+
+      <view class="fx-rate" wx:if="{{fxRate}}">{{fxRate}}</view>
+
+      <view class="fx-list" wx:if="{{fxReady}}">
+        <view class="fx-row" wx:for="{{fxList}}" wx:key="code">
+          <view class="fx-cc {{item.badge?'':'hide'}}">{{item.badge}}</view>
+          <view class="fx-name">{{item.name}}</view>
+          <view class="fx-val">{{item.value}}</view>
+        </view>
+      </view>
+      <view class="empty" wx:else>{{fxError || '汇率获取中…'}}</view>
+      <view class="fx-note" wx:if="{{fxReady}}">数据源 open.er-api.com · {{fxTime}} · 仅供参考</view>
+    </view>
+  </view>
+
+  <!-- ========== 在线翻译 ========== -->
+  <view id="sec-tr">
+    <view class="sec-h"><text class="sec-t">在线翻译</text><text class="sec-e">TRANSLATE</text><text class="rt">{{modelReady?'LLM 可用':'模型连接中'}}</text></view>
+    <view class="card tr">
+      <textarea class="tr-input" value="{{srcText}}" placeholder="输入要翻译的中文，如：这个多少钱？"
+        bindinput="onTrInput" maxlength="200" auto-height />
+
+      <!-- 场景短语 -->
+      <view class="ph">
+        <view class="ph-g">
+          <view class="ph-gi {{phraseGroup==index?'on':''}}" wx:for="{{phrases}}" wx:key="g"
+            data-i="{{index}}" bindtap="pickGroup">{{item.g}}</view>
+        </view>
+        <view class="ph-list">
+          <view class="ph-i" wx:for="{{phrases[phraseGroup].list}}" wx:key="*this"
+            data-t="{{item}}" bindtap="usePhrase">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="tr-btns">
+        <view wx:for="{{langs}}" wx:key="code" data-c="{{item.code}}"
+          class="tr-lang {{trLang===item.code?'sel':''}}" bindtap="setLang">{{item.name}}</view>
+      </view>
+      <view class="btn-primary tr-go" bindtap="doTranslate">{{translating?'翻译中…':'翻译'}}</view>
+      <view class="tr-result" wx:if="{{trResult}}">
+        <view class="tr-rl">翻译结果</view>
+        <view class="tr-rt">{{trResult}}</view>
+        <view class="tr-copy" bindtap="copyTr">复制</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 时差时钟 ========== -->
+  <view id="sec-clk">
+    <view class="sec-h"><text class="sec-t">各国当地时间</text><text class="sec-e">LOCAL TIME</text><text class="rt">实时</text></view>
+    <scroll-view class="clk-bar" scroll-x enable-flex show-scrollbar="{{false}}">
+      <view class="clk-in">
+        <view class="clk-c" wx:for="{{clock}}" wx:key="n">
+          <view class="clk-ab">{{item.abbr}}</view>
+          <view class="clk-n">{{item.n}}</view>
+          <view class="clk-t {{item.tz===8?'same':''}}">{{item.t}}</view>
+          <view class="clk-d">{{item.d}}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ========== 十国速查 ========== -->
+  <view id="sec-ct">
+    <view class="sec-h"><text class="sec-t">东盟十国速查</text><text class="sec-e">TEN COUNTRIES</text></view>
+    <view class="search">
+      <input class="search-in" value="{{search}}" placeholder="搜国家 / 首都 / 货币 / 语言"
+        bindinput="onSearch" confirm-type="search" />
+      <view class="search-x" wx:if="{{search}}" bindtap="clearSearch">×</view>
+    </view>
+
+    <view class="countries" wx:if="{{list.length}}">
+      <view class="country" wx:for="{{list}}" wx:key="id" data-i="{{index}}" bindtap="showCountry">
+        <view class="c-bar"></view>
+        <view class="c-top">
+          <text class="c-ab">{{item.abbr}}</text>
+          <text class="c-visa {{item.visaShort==='互免'?'v-free':(item.visaShort==='需签证'?'v-no':'v-e')}}">{{item.visaShort}}</text>
+        </view>
+        <view class="c-name">{{item.n}}</view>
+        <view class="c-en">{{item.en}}</view>
+        <view class="c-cur">{{item.cur}} {{item.curName}}</view>
+        <view class="c-cap">首都 {{item.cap}}</view>
+      </view>
+    </view>
+    <view class="empty" wx:else>没找到「{{search}}」，试试「泰国」「THB」「曼谷」</view>
+
+    <view class="note">签证与口岸政策调整频繁，出行前请以中国领事服务网及目的国使领馆公告为准。</view>
+  </view>
+
+  <!-- ========== 出行清单 ========== -->
+  <view id="sec-ck">
+    <view class="sec-h"><text class="sec-t">出境准备清单</text><text class="sec-e">CHECKLIST</text><text class="rt">{{checkDone}}/{{checklist.length}}</text></view>
+    <view class="card ck">
+      <view class="bar"><view class="bar-in" style="width: {{checklist.length ? checkDone*100/checklist.length : 0}}%"></view></view>
+      <view class="ck-i" wx:for="{{checklist}}" wx:key="t" data-i="{{index}}" bindtap="toggleCheck">
+        <view class="ck-box {{item.on?'on':''}}">{{item.on?'✓':''}}</view>
+        <view class="ck-t {{item.on?'done':''}}">{{item.t}}</view>
+      </view>
+      <view class="ck-foot">
+        <text class="ck-tip">勾选自动保存在本机</text>
+        <text class="ck-reset" bindtap="resetCheck">重置</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 东盟指南全屏层 ===== -->
+<view class="gd" wx:if="{{gdOpen}}" catchtouchmove="noop">
+  <view class="gd-top">
+    <view class="gd-hl">
+      <view class="gd-kk">ASEAN GUIDE</view>
+      <view class="gd-tt">东盟指南</view>
+    </view>
+    <view class="gd-x" bindtap="closeGd">×</view>
+  </view>
+  <scroll-view class="gd-tabs" scroll-x enable-flex show-scrollbar="{{false}}">
+    <view class="gd-tin">
+      <view class="gd-ti {{gdTab===item.k?'on':''}}" wx:for="{{gdTabs}}" wx:key="k"
+        data-k="{{item.k}}" bindtap="jumpGd">{{item.t}}</view>
+    </view>
+  </scroll-view>
+  <view class="gd-meta">签证口径核对 {{policyAt}} · 新闻抓取 {{newsAt}}</view>
+  <scroll-view class="gd-body" scroll-y scroll-into-view="{{gdAnchor}}" scroll-with-animation>
+    <view wx:for="{{guide}}" wx:key="k" id="gd-{{item.k}}" class="gd-sec">
+      <view class="gd-st">{{item.t}}</view>
+      <view class="gd-ss">{{item.sub}}</view>
+
+      <block wx:for="{{item.blocks}}" wx:for-item="b" wx:key="type">
+        <view class="gd-rows" wx:if="{{b.type==='rows'}}">
+          <view class="gd-row" wx:for="{{b.rows}}" wx:for-item="r" wx:key="k">
+            <text class="gd-k">{{r.k}}</text>
+            <text class="gd-v">{{r.v}}</text>
+          </view>
+        </view>
+
+        <view class="gd-list" wx:elif="{{b.type==='list'}}">
+          <view class="gd-li" wx:for="{{b.list}}" wx:for-item="r" wx:key="t">
+            <text class="gd-lt">{{r.t}}</text>
+            <text class="gd-ld">{{r.d}}</text>
+          </view>
+        </view>
+
+        <view class="gd-news" wx:elif="{{b.type==='news'}}">
+          <view class="gd-nw" wx:for="{{b.news}}" wx:for-item="n" wx:key="t">
+            <view class="gd-nt">{{n.t}}</view>
+            <view class="gd-nm">{{n.d}} · {{n.s}}</view>
+          </view>
+        </view>
+      </block>
+
+      <view class="gd-note">{{item.note}}</view>
+    </view>
+    <view class="gd-foot">内容为公开国情与官方资讯整理 · 政策以官方公告为准</view>
+  </scroll-view>
+</view>
+
+<!-- 国情详情弹层 -->
+<view class="mask" wx:if="{{showDetail}}" bindtap="hideCountry"></view>
+<view class="sheet {{showDetail?'show':''}}" wx:if="{{showDetail}}">
+  <view class="sh-h">
+    <view class="sh-title">{{country.n}}</view>
+    <view class="sh-x" bindtap="hideCountry">×</view>
+  </view>
+  <view class="sh-sub">{{country.en}} · 当地时间 {{country.now}} · {{country.diff}}</view>
+
+  <view class="c-info">
+    <view class="ci-row"><text class="ci-k">首都</text><text class="ci-v">{{country.cap}}</text></view>
+    <view class="ci-row"><text class="ci-k">语言</text><text class="ci-v">{{country.lang}}</text></view>
+    <view class="ci-row"><text class="ci-k">货币</text><text class="ci-v">{{country.cur}} {{country.curName}} {{country.sym}}</text></view>
+    <view class="ci-row"><text class="ci-k">区号</text><text class="ci-v">{{country.code}}</text></view>
+    <view class="ci-row"><text class="ci-k">电压</text><text class="ci-v">{{country.voltage}} · {{country.plug}}</text></view>
+    <view class="ci-row"><text class="ci-k">签证</text><text class="ci-v">{{country.visa}}</text></view>
+    <view class="ci-row"><text class="ci-k">最佳</text><text class="ci-v">{{country.best}}（{{country.season}}）</text></view>
+  </view>
+
+  <view class="c-tip">{{country.tip}}</view>
+  <view class="c-warn">{{country.visaNote}}；政策以官方公告为准。</view>
+</view>

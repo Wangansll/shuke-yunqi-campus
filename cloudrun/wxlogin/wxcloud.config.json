@@ -1,0 +1,8 @@
+{
+  "type": "run",
+  "server": {
+    "port": 80,
+    "buildDir": ".",
+    "versionRemark": "wxlogin: 增加 /api/wxlogin 返回微信云托管注入的 openid"
+  }
+}

@@ -1,0 +1,307 @@
+<!-- pages/guide/index.wxml —— 办事指南 -->
+<view class="page">
+
+  <!-- 顶部：标题 + 统计 -->
+  <view class="top">
+    <view class="top-t">办事指南</view>
+    <view class="top-s">{{total}} 件事 · {{catN}} 类 · 其中 {{onlineN}} 件能线上办</view>
+  </view>
+
+  <!-- 搜索 -->
+  <view class="swrap" wx:if="{{!route}}">
+    <view class="sbox">
+      <view class="s-ic"></view>
+      <input class="s-in" value="{{q}}" placeholder="搜：请假材料 / 取件码 / 缓考 / 学信网"
+        placeholder-class="s-ph" confirm-type="search" bindinput="onInput" />
+      <view class="s-clr" wx:if="{{q}}" bindtap="clearQ">✕</view>
+    </view>
+    <scroll-view class="hots" scroll-x enable-flex>
+      <view class="hot" wx:for="{{hots}}" wx:key="*this" data-w="{{item}}" bindtap="pickHot">{{item}}</view>
+    </scroll-view>
+  </view>
+
+  <!-- 我的办事 -->
+  <view class="mine" wx:if="{{!route && favCards.length}}">
+    <view class="mine-h">
+      <text class="mine-t">我的办事</text>
+      <text class="mine-n">{{favCards.length}} 件 · 点开继续</text>
+    </view>
+    <scroll-view class="mine-sc" scroll-x enable-flex>
+      <view class="mc" wx:for="{{favCards}}" wx:key="k" data-k="{{item.k}}" bindtap="jumpTo">
+        <view class="mc-h">
+          <text class="mc-t">{{item.t}}</text>
+          <text class="mc-p {{item.full ? 'full' : ''}}" wx:if="{{item.prog}}">{{item.full ? '材料齐' : item.prog}}</text>
+        </view>
+        <text class="mc-s">{{item.brief}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 分类 -->
+  <scroll-view class="filters" scroll-x enable-flex wx:if="{{!route}}">
+    <view class="fl {{filter === item.k ? 'on' : ''}}" wx:for="{{filters}}" wx:key="k"
+      data-k="{{item.k}}" bindtap="pickFilter">
+      <image wx:if="{{item.ic}}" class="fl-ic" src="{{filter === item.k ? item.icOn : item.ic}}" mode="aspectFit" />
+      <text class="fl-n">{{item.n}}</text>
+      <text class="fl-c">{{item.count}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 路线编排入口 -->
+  <view class="rt-entry" wx:if="{{!routeOn && !route}}" bindtap="startRoute">
+    <view class="rt-e-l">
+      <text class="rt-e-t">今天要办几件？</text>
+      <text class="rt-e-s">勾 2—5 件，排一条不用来回跑的路线</text>
+    </view>
+    <text class="rt-e-go">排路线 ›</text>
+  </view>
+
+  <view class="rt-bar" wx:if="{{routeOn}}">
+    <view class="rt-bar-l">
+      <text class="rt-bar-t">已选 {{picked.length}} 件</text>
+      <text class="rt-bar-s">点下面任意一行勾选，最多 5 件</text>
+    </view>
+    <text class="rt-bar-x" bindtap="stopRoute">退出</text>
+  </view>
+
+  <!-- 列表 -->
+  <view class="feed" wx:if="{{!route}}">
+    <view class="cnt" wx:if="{{q && view.length}}">找到 {{view.length}} 件与「{{q}}」有关的</view>
+    <block wx:if="{{view.length}}">
+      <view class="row {{openK === item.k ? 'open' : ''}}" wx:for="{{view}}" wx:key="k"
+        id="card-{{item.k}}" style="--c:{{item.c}};--cl:{{item.light}}">
+
+        <!-- 行头 -->
+        <view class="rh" data-k="{{item.k}}" bindtap="onRowTap">
+          <view class="pick {{item.sel ? 'on' : ''}}" wx:if="{{routeOn}}">{{item.sel ? '✓' : ''}}</view>
+          <view class="rh-ic">
+            <image src="{{item.catIc}}" mode="aspectFit" />
+          </view>
+          <view class="rh-b">
+            <view class="rh-t"><text wx:if="{{item.tSegs}}"><text wx:for="{{item.tSegs}}" wx:for-item="g" wx:key="i"
+              class="{{g.h ? 'hl' : ''}}">{{g.s}}</text></text><text wx:else>{{item.t}}</text></view>
+            <view class="rh-m">
+              <text class="badge {{item.entryOnly ? 'entry-only' : (item.way === '线上' ? 'on' : '')}}">{{item.entryOnly ? '仅入口' : item.way}}</text>
+              <text class="rh-w">{{item.place}}</text>
+              <text class="rh-n">{{item.nNeed}} 件材料</text>
+            </view>
+            <view class="why" wx:if="{{item.whySegs}}">
+              <text class="why-l">{{item.whyLabel}}</text>
+              <text class="why-x"><text wx:for="{{item.whySegs}}" wx:for-item="g" wx:key="i"
+                class="{{g.h ? 'hl' : ''}}{{g.e ? 'em' : ''}}">{{g.s}}</text></text>
+            </view>
+          </view>
+          <view class="star {{item.fav ? 'on' : ''}}" catchtap="toggleFav" data-k="{{item.k}}">★</view>
+        </view>
+
+        <!-- 展开：五块 -->
+        <view class="dt" wx:if="{{openK === item.k && open}}">
+
+          <!-- 1 要带的材料 -->
+          <view class="sec">
+            <view class="sec-h">
+              <text class="sec-t">要带的材料</text>
+              <text class="sec-p" wx:if="{{open.needN}}">已备 {{open.doneN}}/{{open.needN}}</text>
+              <text class="sec-p" wx:else>不用带材料</text>
+            </view>
+            <view class="nd {{n.on ? 'on' : ''}}" wx:for="{{open.need}}" wx:for-item="n" wx:key="i"
+              catchtap="toggleNeed" data-k="{{open.k}}" data-i="{{n.i}}">
+              <view class="nd-box"></view>
+              <text class="nd-x"><text wx:for="{{n.segs}}" wx:for-item="g" wx:key="i"
+                class="{{g.e ? 'em' : ''}}">{{g.s}}</text></text>
+            </view>
+            <view class="sec-a" catchtap="copyNeed">复制这份清单</view>
+          </view>
+
+          <!-- 2 怎么办 -->
+          <view class="sec">
+            <view class="sec-h"><text class="sec-t">怎么办</text><text class="sec-p">{{open.steps.length}} 步</text></view>
+            <view class="entry-note" wx:if="{{open.entryOnly}}">这一件只给官方入口：本人登录后查看办理，本站不代查、不代缴、不代登录。</view>
+            <view class="st" wx:for="{{open.steps}}" wx:key="n">
+              <view class="st-l">
+                <text class="st-n">{{item.n}}</text>
+                <view class="st-rail" wx:if="{{index < open.steps.length - 1}}"></view>
+              </view>
+              <text class="st-x"><text wx:for="{{item.segs}}" wx:for-item="g" wx:key="i"
+                class="{{g.e ? 'em' : ''}}">{{g.s}}</text></text>
+            </view>
+          </view>
+
+          <!-- 3 去哪办 -->
+          <view class="sec">
+            <view class="sec-h"><text class="sec-t">去哪办</text></view>
+            <view class="wh" wx:for="{{open.where}}" wx:key="n">
+              <view class="wh-l">
+                <text class="wh-n">{{item.n}}</text>
+                <text class="wh-d" wx:if="{{item.d}}">{{item.d}}</text>
+              </view>
+              <view class="call" wx:if="{{item.tel}}" catchtap="call" data-tel="{{item.tel}}">拨打</view>
+            </view>
+            <view class="en" wx:if="{{open.entry}}" catchtap="openEntry">
+              <view class="en-l">
+                <text class="en-k">{{open.entry.kind === 'page' ? '站内直达' : '外部链接'}}</text>
+                <text class="en-n">{{open.entry.n}}</text>
+              </view>
+              <text class="en-go">{{open.entry.kind === 'page' ? '去 ›' : '复制 ›'}}</text>
+            </view>
+            <view class="due" wx:if="{{open.due}}">
+              <text class="due-k">时间</text>
+              <text class="due-x">{{open.due}}</text>
+            </view>
+          </view>
+
+          <!-- 4 容易卡住 -->
+          <view class="sec" wx:if="{{open.tips.length}}">
+            <view class="sec-h"><text class="sec-t">容易卡住的地方</text></view>
+            <view class="tp" wx:for="{{open.tips}}" wx:key="i">
+              <text class="tp-d"></text>
+              <text class="tp-x"><text wx:for="{{item.segs}}" wx:for-item="g" wx:key="i"
+                class="{{g.e ? 'em' : ''}}">{{g.s}}</text></text>
+            </view>
+          </view>
+
+          <!-- 5 出处 + 相关 -->
+          <view class="ft">
+            <view class="ft-src" catchtap="copySrc" data-src="{{open.src}}">
+              <text class="ft-k">出处</text>
+              <text class="ft-v">{{open.src}}</text>
+              <text class="ft-c">复制</text>
+            </view>
+            <view class="rel" wx:if="{{open.rel.length}}">
+              <text class="rel-k">相关</text>
+              <view class="rel-i" wx:for="{{open.rel}}" wx:key="k" data-k="{{item.k}}" catchtap="jumpTo">
+                <image class="rel-ic" src="{{item.ic}}" mode="aspectFit" />
+                <text class="rel-t">{{item.t}}</text>
+              </view>
+            </view>
+            <view class="ft-a" catchtap="copyAll">复制全文（步骤 + 材料 + 地点）</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空结果 -->
+    <view class="empty" wx:else>
+      <view class="empty-t">没找到「{{q}}」</view>
+      <view class="empty-s">办事指南只写了 {{total}} 件有出处的事。{{miss.length ? '这几件沾点边：' : '其他问题可以在校园百科里搜官网原文：'}}</view>
+      <view class="empty-n" wx:if="{{miss.length}}">
+        <view class="en-i" wx:for="{{miss}}" wx:key="k" data-k="{{item.k}}" bindtap="jumpTo">
+          <text class="en-d">{{item.cat}}</text>
+          <text class="en-t">{{item.t}}</text>
+          <text class="en-g">›</text>
+        </view>
+      </view>
+      <view class="empty-b" bindtap="goWiki">去校园百科搜「{{q}}」›</view>
+    </view>
+
+    <!-- 没写到的 -->
+    <view class="more" wx:if="{{view.length}}" bindtap="goWiki">
+      <text class="more-t">没写到的</text>
+      <text class="more-s">去校园百科搜官网原文 ›</text>
+    </view>
+
+    <!-- 紧急电话 -->
+    <view class="tel">
+      <text class="tel-k">急事直接打</text>
+      <view class="tel-i" wx:for="{{hotlines}}" wx:key="tel" catchtap="call" data-tel="{{item.tel}}">
+        <text class="tel-n">{{item.n}}</text>
+        <text class="tel-v">{{item.tel}}</text>
+      </view>
+    </view>
+
+    <view class="foot">只讲怎么办，不代办、不转交、不收材料。政策以当期文件为准。</view>
+  </view>
+
+  <!-- 选择态底部浮条 -->
+  <view class="rt-fab" wx:if="{{routeOn && picked.length}}">
+    <text class="rt-fab-n">已选 {{picked.length}} 件</text>
+    <view class="rt-fab-b" bindtap="genRoute">排一条路线</view>
+  </view>
+
+  <!-- 路线结果 -->
+  <view class="rv" wx:if="{{route}}">
+    <view class="rv-hd">
+      <view class="rv-hl">
+        <text class="rv-t">办事路线</text>
+        <text class="rv-s">{{route.startAt}} 出发 · {{route.steps.length}} 个地点 · 约 {{route.totalMin}} 分钟</text>
+      </view>
+      <text class="rv-x" bindtap="closeRoute">✕</text>
+    </view>
+
+    <view class="rv-bd">
+      <view class="rv-sum" wx:if="{{route.steps.length}}">
+        <view class="rv-sum-i">
+          <text class="rv-sum-n">{{route.steps.length}}</text>
+          <text class="rv-sum-k">个地点</text>
+        </view>
+        <view class="rv-sum-i">
+          <text class="rv-sum-n">{{route.totalMin}}</text>
+          <text class="rv-sum-k">分钟</text>
+        </view>
+        <view class="rv-sum-i">
+          <text class="rv-sum-n">{{route.online.length}}</text>
+          <text class="rv-sum-k">件手机办</text>
+        </view>
+        <picker mode="time" value="{{startAt}}" bindchange="setStart">
+          <view class="rv-sum-i rv-sum-pick">
+            <text class="rv-sum-n sm">{{startAt}}</text>
+            <text class="rv-sum-k">改出发</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="rv-none" wx:else>今天这些事都排不进，最早明天再去。原因见下面。</view>
+
+      <view class="rv-st" wx:for="{{route.steps}}" wx:key="place">
+        <view class="rv-st-l">
+          <text class="rv-st-a">{{item.arrive}}</text>
+          <text class="rv-st-b">{{item.leave}}</text>
+          <view class="rv-st-line" wx:if="{{index < route.steps.length - 1}}"></view>
+        </view>
+        <view class="rv-st-r">
+          <view class="rv-st-h">
+            <text class="rv-st-t">{{item.place}}</text>
+            <text class="rv-st-w {{item.known ? '' : 'est'}}">{{item.known ? item.winLabel : item.winLabel + ' 估算'}}</text>
+          </view>
+          <text class="rv-st-belt">{{item.belt}}</text>
+          <view class="rv-it" wx:for="{{item.items}}" wx:for-item="it" wx:key="k"
+            data-k="{{it.k}}" catchtap="fromRoute">
+            <text class="rv-it-t">{{it.t}}</text>
+            <text class="rv-it-tip" wx:if="{{it.tip}}">{{it.tip}}</text>
+          </view>
+          <view class="rv-call" wx:if="{{item.tel}}" catchtap="call" data-tel="{{item.tel}}">打 {{item.tel}}</view>
+        </view>
+      </view>
+
+      <view class="rv-on" wx:if="{{route.online.length}}">
+        <text class="rv-on-t">不用出门，手机上办</text>
+        <view class="rv-it" wx:for="{{route.online}}" wx:for-item="it" wx:key="k" data-k="{{it.k}}" catchtap="fromRoute">
+          <text class="rv-it-t">{{it.t}}</text>
+          <text class="rv-it-tip">{{it.note}}</text>
+        </view>
+      </view>
+
+      <view class="rv-block" wx:if="{{route.blocked.length}}">
+        <text class="rv-block-t">今天排不进</text>
+        <view class="rv-it" wx:for="{{route.blocked}}" wx:for-item="b" wx:key="place">
+          <text class="rv-it-t">{{b.place}}</text>
+          <text class="rv-it-tip">{{b.why}}</text>
+        </view>
+      </view>
+
+      <view class="rv-shared" wx:if="{{route.shared.length}}">
+        <text class="rv-shared-t">带一份就够</text>
+        <view class="rv-sh" wx:for="{{route.shared}}" wx:key="key">
+          <text class="rv-sh-l">{{item.label}}</text>
+          <text class="rv-sh-n">{{item.n}} 件事都要</text>
+        </view>
+      </view>
+
+      <view class="rv-note">顺序按「最早关门 + 同一栋楼合并」排，未按距离优化；标「估算」的时段未公示，以现场为准。</view>
+    </view>
+
+    <view class="rv-ft">
+      <view class="rv-ft-b" bindtap="copyRoute">复制路线</view>
+    </view>
+  </view>
+</view>

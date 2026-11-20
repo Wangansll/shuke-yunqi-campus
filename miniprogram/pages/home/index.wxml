@@ -1,0 +1,149 @@
+<!-- pages/home/index.wxml —— 首页·智能中枢 -->
+<view class="page">
+  <!-- 品牌头部 -->
+  <view class="hero">
+    <view class="hero-glow"></view>
+    <view class="hero-grid"></view>
+    <view class="brand">
+      <image class="logo" src="/images/brand-mark.png" mode="aspectFit" />
+      <view class="brand-tx">
+        <view class="title">数科云栖校园</view>
+        <view class="sub">南宁数字科技学院 · 智能校园助手</view>
+      </view>
+    </view>
+    <view class="hstat">
+      <view class="live {{modelReady?'on':''}}"><view class="dot"></view><text>{{modelReady?'小栖在线':'连接中'}}</text></view>
+      <view class="mchip" bindtap="tapModel">{{modelShow}}</view>
+      <text class="kbtx">百科 {{kbSize}} 条</text>
+    </view>
+  </view>
+
+  <!-- 智能中枢 C 位 -->
+  <view class="hub card">
+    <view class="hub-h">
+      <image class="hub-face" src="/images/brand/xiaoqi-head.png" mode="aspectFit" />
+      <view>
+        <view class="hub-t">今天需要小栖帮什么？</view>
+        <view class="hub-s">点餐、请假、查服务、东盟翻译…直接问</view>
+      </view>
+    </view>
+    <view class="input-row">
+      <input class="qinput" value="{{question}}" placeholder="试试：今天中午吃什么"
+        confirm-type="send" bindinput="onInput" bindconfirm="askHub" />
+      <view class="send" bindtap="askHub">问问小栖</view>
+    </view>
+    <view class="chips">
+      <view class="chip" wx:for="{{chips}}" wx:key="*this" data-q="{{item}}" bindtap="useChip">{{item}}</view>
+    </view>
+  </view>
+
+  <view class="apps-wrap">
+
+  <!-- 常用入口：全部站内可用，没有一个"看起来能办事"的假入口 -->
+  <view class="sec-h">
+    <view class="sec-l">
+      <view class="sec-t">常用入口</view>
+      <view class="sec-e">QUICK ACCESS</view>
+    </view>
+    <view class="rt">6 项 · 全部站内</view>
+  </view>
+  <view class="bento">
+    <view class="b-main" bindtap="goFood">
+      <view class="b-top">
+        <view class="b-ic brand"><image class="b-img" src="/images/icons/food.png" mode="aspectFit" /></view>
+        <view class="b-tag tag-food">站内</view>
+      </view>
+      <view class="b-title">美食鉴赏</view>
+      <view class="b-sub">{{foodStat.dishes}} 道菜 · {{foodStat.shops}} 家店 · {{foodStat.reviews}} 条评价</view>
+      <view class="b-inner">
+        <text class="bi-pin">📖</text>
+        <view class="bi-tx">
+          <text class="bi-n">图鉴 · 销量榜 · 口碑</text>
+          <text class="bi-s">校内档口与校门口的菜，和同学原话</text>
+        </view>
+      </view>
+      <view class="b-go">逛逛有什么菜 <text class="arr">›</text></view>
+    </view>
+    <view class="b-side">
+      <view class="b-sm bs-tt" bindtap="goTimetable">
+        <view class="bs-head"><view class="b-ic sm"><image class="b-img" src="/images/icons/timetable.png" mode="aspectFit" /></view><text class="bs-arr">›</text></view>
+        <view class="bs-title">课表</view>
+        <view class="bs-sub">第 {{ttWeek}} 周 · {{ttCnt}} 节</view>
+        <view class="tt-tags"><text>添加</text><text>导入</text><text>识别</text><text>手动</text></view>
+      </view>
+      <view class="b-pair">
+        <view class="b-xs" bindtap="goGuide">
+          <view class="b-ic xs mint"><text class="b-emoji">📘</text></view>
+          <view class="bx-t">办事指南</view>
+          <view class="bx-s">{{guideN}} 件 · {{guideCatN}} 类</view>
+        </view>
+        <view class="b-xs" bindtap="goExpress">
+          <view class="b-ic xs amber"><text class="b-emoji">📦</text></view>
+          <view class="bx-t">快递</view>
+          <view class="bx-s">真实轨迹</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="b-row">
+    <view class="b-two" bindtap="goBoard">
+      <view class="bt-ic"><image class="b-img" src="/images/icons/board.png" mode="aspectFit" /></view>
+      <view class="bt-n">校园互助</view>
+      <view class="bt-s">失物 · 二手 · 求助</view>
+    </view>
+    <view class="b-two b-two-blue" bindtap="goLife">
+      <view class="bt-ic"><image class="b-img" src="/images/icons/life.png" mode="aspectFit" /></view>
+      <view class="bt-n">校园导览</view>
+      <view class="bt-s">四岭 · 食堂 · 摆渡车</view>
+    </view>
+  </view>
+
+  </view>
+
+  <!-- 校园百科：整站语料 + 官方图册 -->
+  <view class="wide" bindtap="goWiki">
+    <view class="w-l">
+      <view class="w-t"><view class="w-ic-box"><image class="w-ic" src="/images/icons/wiki.png" mode="aspectFit" /></view>校园百科</view>
+      <view class="w-s">官网整站 {{wikiTotal || '1000+'}} 条 + 校历地图图册，搜什么都有原文链接</view>
+    </view>
+    <view class="w-go">进入 ›</view>
+  </view>
+
+  <!-- 站外入口已移到「服务」页，首页只留在站内能办的事 -->
+
+  <!-- 吉利专区：官方视觉 + 四宫格内嵌 -->
+  <view class="sec-h">
+    <view class="sec-l">
+      <view class="sec-t">吉利专区</view>
+      <view class="sec-e">GEELY ZONE</view>
+    </view>
+    <view class="rt">校招 / 社招</view>
+  </view>
+  <view class="gcard" bindtap="goGeely">
+    <view class="g-top">
+      <view class="g-tile"><image class="g-lock" src="/images/brand/geely-lockup-blue.png" mode="aspectFit" /></view>
+      <view class="g-main">
+        <view class="g-n">浙江吉利控股集团</view>
+        <view class="g-d">1986 年始创 · 总部杭州 · 世界 500 强</view>
+      </view>
+      <view class="g-go">›</view>
+    </view>
+    <view class="g-cells">
+      <view class="g-cell"><text class="gc-n">集团概况</text><text class="gc-s">12 万员工</text></view>
+      <view class="g-cell"><text class="gc-n">校园招聘</text><text class="gc-s">应届 / 实习</text></view>
+      <view class="g-cell"><text class="gc-n">社会招聘</text><text class="gc-s">三大入口</text></view>
+      <view class="g-cell"><text class="gc-n">校园动态</text><text class="gc-s">真实公告</text></view>
+    </view>
+    <!-- 面试单独一条：盒子点进去是专区，这条直接进面试 -->
+    <view class="g-ai" catchtap="goInterviewAi">
+      <text class="g-ai-ic">🎤</text>
+      <view class="g-ai-tx">
+        <text class="g-ai-n">AI 模拟面试</text>
+        <text class="g-ai-d">普通 / 专业 / 压力 三档 · 面完给分</text>
+      </view>
+      <text class="g-ai-go">去练 ›</text>
+    </view>
+  </view>
+
+</view>

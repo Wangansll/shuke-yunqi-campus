@@ -1,0 +1,8 @@
+README.md
+deploy.ps1
+wxcloud.config.json
+db.config.json
+db.config.example.json
+Dockerfile.bak-20261118
+node_modules
+*.log

@@ -1,0 +1,84 @@
+<!-- pages/board/index.wxml —— 校园互助墙 -->
+<view class="page">
+  <view class="top">
+    <view class="th">
+      <view class="t1">校园互助墙</view>
+      <view class="pub" bindtap="openForm">＋ 发布</view>
+    </view>
+    <view class="t2">失物招领、二手转卖、求助互帮都在这里发；云端能看到全校发的，断网时只存在本机。</view>
+  </view>
+
+  <view class="filters">
+    <view class="f {{curCat==='all'?'on':''}}" data-k="all" bindtap="pickCat">全部</view>
+    <view class="f {{curCat===item.k?'on':''}}" wx:for="{{cats}}" wx:key="k" data-k="{{item.k}}" bindtap="pickCat">{{item.n}}</view>
+    <view class="f mine {{mineOnly?'on':''}}" bindtap="filterMine">我的</view>
+  </view>
+
+  <view class="cnote" wx:if="{{cloudNote}}">{{cloudNote}}</view>
+  <view class="cnote warn" wx:if="{{tip}}">{{tip}}</view>
+
+  <view class="empty" wx:if="{{items.length === 0}}">
+    {{mineOnly ? (curCat === 'all' ? '你还没发过' : '这个分类下你还没发过') : (curCat === 'all' ? '这里还没有内容' : '这一类还没有内容')}}
+    <view class="empty-s">{{mineOnly ? '点右上角「发布」发一条，或者取消「我的」看看别人的' : '点右上角「发布」补一条，或者切回「全部」看看'}}</view>
+  </view>
+
+  <view class="pcard" wx:for="{{items}}" wx:key="_id">
+    <view class="pc-h">
+      <view class="pc-cat">{{item.catIc}} {{item.catName}}</view>
+      <view class="pc-who" wx:if="{{item.honorName}}">
+        <view class="tplate {{item.honorMetal || 'none'}}">
+          <image wx:if="{{item.cupSrc}}" class="tp-cup" src="{{item.cupSrc}}" mode="aspectFit" />
+          <text wx:else class="tp-cup-ph">✦</text>
+          <text class="tp-name">{{item.honorName}}</text>
+        </view>
+        <text class="pc-klass" wx:if="{{item.klass}}">{{item.klass}}</text>
+      </view>
+      <view class="pc-who plain" wx:elif="{{item.whoText}}">{{item.whoText}}</view>
+      <view class="pc-mine" wx:if="{{item.isMine}}">我发的</view>
+    </view>
+    <view class="pc-t">{{item.title}}</view>
+    <view class="pc-d">{{item.desc}}</view>
+    <view class="pc-f">
+      <text class="pc-time">{{item.timeText}}</text>
+      <text class="pc-contact" wx:if="{{item.contact}}" data-v="{{item.contact}}" catchtap="copyContact">联系方式：{{item.contact}}</text>
+      <text class="pc-ask" data-t="{{item.title}}" catchtap="askXiaoqi">问小栖 ›</text>
+    </view>
+  </view>
+
+  <view class="foot">发布内容由同学自己填写，请勿发布他人隐私信息；交易请注意当面验货。</view>
+</view>
+
+<!-- 发布面板 -->
+<view class="mask" wx:if="{{showForm}}" bindtap="closeForm"></view>
+<view class="sheet" wx:if="{{showForm}}">
+  <view class="sh-h">
+    <view class="sh-t">发布一条</view>
+    <view class="sh-x" bindtap="closeForm">×</view>
+  </view>
+
+  <view class="frow">
+    <text class="flb">分类</text>
+    <picker mode="selector" range="{{cats}}" range-key="n" value="{{catIndex}}" bindchange="onCatChange">
+      <view class="fpick">{{cats[catIndex].n}} <text class="farr">▾</text></view>
+    </picker>
+  </view>
+
+  <input class="fipt" value="{{title}}" placeholder="标题：一句话说清楚" maxlength="30" bindinput="onTitle" />
+  <textarea class="fta" value="{{desc}}" placeholder="{{cats[catIndex].ph}}" maxlength="300" auto-height bindinput="onDesc" />
+  <input class="fipt" value="{{contact}}" placeholder="联系方式（选填）：微信号 / 手机号 / 宿舍号" maxlength="40" bindinput="onContact" />
+
+  <view class="fid">
+    <text class="fid-t">以</text>
+    <text class="fid-k">{{klassText || '未设班级'}}</text>
+    <view class="tplate {{honor ? honor.metal : 'none'}}" wx:if="{{honor}}">
+      <image wx:if="{{cupSrc}}" class="tp-cup" src="{{cupSrc}}" mode="aspectFit" />
+      <text wx:else class="tp-cup-ph">✦</text>
+      <text class="tp-name">{{honor.n}}</text>
+    </view>
+    <text class="fid-t">发帖</text>
+  </view>
+  <view class="fid-tip" wx:if="{{!klassText}}">班级和头衔在「我的」里设置，设置后会标在帖子作者后面。</view>
+
+  <view class="fbtn {{posting?'dis':''}}" bindtap="submit">{{posting ? '发布中…' : '发布到互助墙'}}</view>
+  <view class="fhint">发布后所有人可见（云端通了才会汇总到全校列表）</view>
+</view>

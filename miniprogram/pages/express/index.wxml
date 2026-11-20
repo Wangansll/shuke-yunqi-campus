@@ -1,0 +1,65 @@
+<!-- pages/express/index.wxml —— 快递查询 -->
+<view class="page">
+  <view class="hero">
+    <view class="h-grid"></view>
+    <view class="h-halo"></view>
+    <view class="h-t">查快递</view>
+    <view class="h-s">输入单号查真实轨迹 · 查不到给你菜鸟裹裹的入口</view>
+  </view>
+
+  <!-- 输入区 -->
+  <view class="card search">
+    <view class="s-row">
+      <input class="s-in" type="text" value="{{no}}" placeholder="粘贴或输入快递单号"
+        placeholder-class="s-ph" confirm-type="search" bindinput="onInput" bindconfirm="doQuery" />
+      <view class="s-clear" wx:if="{{no}}" catchtap="clear">✕</view>
+    </view>
+
+    <picker mode="selector" range="{{comNames}}" value="{{pickIndex}}" bindchange="onComChange">
+      <view class="s-com">
+        <text class="s-com-l">快递公司</text>
+        <text class="s-com-v">{{comNames[pickIndex]}}</text>
+        <text class="s-com-a">›</text>
+      </view>
+    </picker>
+
+    <!-- 隐私面单：顺丰/京东等要收件人手机后四位 -->
+    <view class="s-phone">
+      <text class="s-com-l">手机后四位</text>
+      <input class="sp-in" type="number" maxlength="4" value="{{phone}}" placeholder="隐私面单才需要"
+        placeholder-class="sp-ph" bindinput="onPhone" />
+    </view>
+
+    <view class="s-btn {{loading ? 'off' : ''}}" bindtap="doQuery">{{loading ? '查询中…' : '查询物流'}}</view>
+  </view>
+
+  <!-- 轨迹 -->
+  <view class="card res" wx:if="{{done && list.length}}">
+    <view class="r-hd">
+      <text class="r-com">{{comName}}</text>
+      <text class="r-no">{{no}}</text>
+    </view>
+    <view class="tl">
+      <view class="tli {{index === 0 ? 'on' : ''}}" wx:for="{{list}}" wx:key="index">
+        <view class="tl-dot"></view>
+        <view class="tl-bd">
+          <view class="tl-tx">{{item.context}}</view>
+          <view class="tl-tm">{{item.time}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 查不到 / 没接通 -->
+  <view class="card fail" wx:if="{{fail}}">
+    <view class="f-t">{{fail}}</view>
+    <view class="f-d">已为你保留单号。也可复制后在支付宝「菜鸟驿站」或菜鸟裹裹里粘贴查询。</view>
+    <view class="f-hint" wx:if="{{hint}}">{{hint}}</view>
+    <view class="f-btn" bindtap="copyNo">复制单号</view>
+  </view>
+
+  <view class="tip">
+    <view class="tip-t">数据说明</view>
+    <view class="tip-s">轨迹来自快递公开查询通道，仅供查看；取件码、驿站位置仍以菜鸟驿站和短信为准。</view>
+  </view>
+</view>

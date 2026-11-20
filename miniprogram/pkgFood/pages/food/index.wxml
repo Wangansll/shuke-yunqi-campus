@@ -1,0 +1,227 @@
+<!-- pkgFood/pages/food/index.wxml —— 校园美食鉴赏 -->
+<view class="page">
+
+  <!-- 顶部：刊物感 -->
+  <view class="hero">
+    <view class="h-grain"></view>
+    <!-- 出口放在刊头右上：这一页只把菜单摊开看，真下单在美团完成 -->
+    <view class="h-order" bindtap="goMeituan" hover-class="h-order-hv" hover-stay-time="80">
+      <view class="ho-glow"></view>
+      <view class="ho-ring"></view>
+      <view class="ho-badge"><image class="ho-gif" src="/pkgFood/images/order.gif" mode="aspectFit" /></view>
+      <view class="ho-tx">
+        <view class="ho-t">开饭</view>
+        <view class="ho-s">跳转美团 ›</view>
+      </view>
+    </view>
+    <view class="h-kicker">{{source.t}} · {{source.d}}</view>
+    <view class="h-title">校园美食鉴赏</view>
+    <view class="h-sub">校内档口与校门口的门店，把菜单摊开来看</view>
+    <view class="h-stats">
+      <view class="hs"><text class="hs-n">{{stats.dishes}}</text><text class="hs-k">道菜</text></view>
+      <view class="hs-dot"></view>
+      <view class="hs"><text class="hs-n">{{stats.shops}}</text><text class="hs-k">家店</text></view>
+      <view class="hs-dot"></view>
+      <view class="hs"><text class="hs-n">{{stats.reviews}}</text><text class="hs-k">条评价</text></view>
+    </view>
+  </view>
+
+  <!-- 三个视角 -->
+  <view class="tabs">
+    <view class="tab {{tab === 'atlas' ? 'on' : ''}}" data-t="atlas" bindtap="switchTab">图鉴</view>
+    <view class="tab {{tab === 'board' ? 'on' : ''}}" data-t="board" bindtap="switchTab">销量榜</view>
+    <view class="tab {{tab === 'voice' ? 'on' : ''}}" data-t="voice" bindtap="switchTab">口碑</view>
+  </view>
+
+  <!-- 范围切换：三个视角共用 -->
+  <view class="scopes">
+    <view class="sc {{scope === 'all' ? 'on' : ''}}" data-s="all" bindtap="pickScope">全部 {{scopeN.all}}</view>
+    <view class="sc {{scope === 'in' ? 'on' : ''}}" data-s="in" bindtap="pickScope">校内 {{scopeN.in}}</view>
+    <view class="sc {{scope === 'out' ? 'on' : ''}}" data-s="out" bindtap="pickScope">校门口 {{scopeN.out}}</view>
+  </view>
+
+  <!-- ========== 图鉴 ========== -->
+  <block wx:if="{{tab === 'atlas'}}">
+
+    <view class="search">
+      <text class="s-ic">⌕</text>
+      <input class="s-in" placeholder="搜菜名或店名，比如 螺蛳粉、烤鸭" value="{{q}}"
+        bindinput="onSearch" confirm-type="search" />
+      <text wx:if="{{q}}" class="s-clr" bindtap="clearSearch">清除</text>
+    </view>
+
+    <scroll-view class="cats" scroll-x show-scrollbar="{{false}}" enable-flex>
+      <view class="cat {{cat === '' ? 'on' : ''}}" data-k="" bindtap="pickCat">
+        <text class="cat-n">全部</text>
+      </view>
+      <view class="cat {{cat === item.k ? 'on' : ''}}" wx:for="{{cats}}" wx:key="k" data-k="{{item.k}}" bindtap="pickCat">
+        <text class="cat-n">{{item.k}}</text>
+        <text class="cat-c">{{item.n}}</text>
+      </view>
+    </scroll-view>
+
+    <view class="res">{{total}} 道菜{{cat ? ' · ' + cat : ''}}</view>
+
+    <view class="grid">
+      <view class="dish" wx:for="{{list}}" wx:key="i" data-d="{{item}}" bindtap="openDish">
+        <view class="d-ph" style="--c1:{{item.c1}};--c2:{{item.c2}}">
+          <image wx:if="{{item.img}}" class="d-img" src="{{item.img}}" mode="aspectFill" lazy-load />
+          <text wx:else class="d-ch">{{item.ch}}</text>
+          <text wx:if="{{item.sig}}" class="d-sig">招牌</text>
+        </view>
+        <view class="d-n">{{item.n}}</view>
+        <view class="d-shop">{{item.shopName}}</view>
+        <view class="d-meta">
+          <text class="d-zone">{{item.zone}}</text>
+          <text wx:if="{{item.sold}}" class="d-sold">月售 {{item.sold}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="more" wx:if="{{shown < total}}" bindtap="more">看更多（还有 {{total - shown}} 道）</view>
+    <view class="empty" wx:if="{{!total}}">没有搜到，换个词试试</view>
+  </block>
+
+  <!-- ========== 销量榜 ========== -->
+  <block wx:if="{{tab === 'board'}}">
+    <view class="board-tip">按平台显示的月售排序；同名菜只留卖得最好的一家。菜品月售超过整店的数按快照误差处理，不上榜。</view>
+    <view class="rank" wx:for="{{board}}" wx:key="i" data-d="{{item}}" bindtap="openDish">
+      <view class="r-no {{index < 3 ? 'top' : ''}}">{{index + 1}}</view>
+      <image wx:if="{{item.img}}" class="r-img" src="{{item.img}}" mode="aspectFill" lazy-load />
+      <view wx:else class="r-ic" style="--c1:{{item.c1}};--c2:{{item.c2}}">{{item.ch}}</view>
+      <view class="r-bd">
+        <view class="r-n">{{item.n}}</view>
+        <view class="r-shop">{{item.zone}} · {{item.shopName}}</view>
+      </view>
+      <view class="r-sold">{{item.sold}}</view>
+    </view>
+  </block>
+
+  <!-- ========== 口碑 ========== -->
+  <block wx:if="{{tab === 'voice'}}">
+    <view class="vsum">
+      <view class="vs-hd">
+        <view class="vs-l">
+          <text class="vs-n">{{stats.reviews}}</text>
+          <text class="vs-k">条评价 · {{voiceTotal}} 家店</text>
+        </view>
+        <view class="vs-pct">
+          <text class="vs-pv">{{vstat.pg}}%</text>
+          <text class="vs-pk">好评率</text>
+        </view>
+      </view>
+      <view class="vs-bar">
+        <view class="vs-g" style="width:{{vstat.pg}}%"></view>
+        <view class="vs-m" style="width:{{vstat.pm}}%"></view>
+        <view class="vs-b" style="width:{{vstat.pb}}%"></view>
+      </view>
+      <view class="vs-key">
+        <text class="vk">好评 {{vstat.good}}</text>
+        <text class="vk">中评 {{vstat.mid}}</text>
+        <text class="vk">差评 {{vstat.bad}}</text>
+        <text class="vk dim">其中 {{vstat.rec}} 条写了推荐菜</text>
+      </view>
+    </view>
+
+    <view class="shop" wx:for="{{shops}}" wx:key="i" data-i="{{item.i}}" bindtap="toggleShop">
+      <view class="s-hd">
+        <view class="s-badge {{item.inside ? 'in' : 'out'}}">{{item.inside ? '校内' : '门口'}}</view>
+        <view class="s-tx">
+          <view class="s-n">{{item.name}}</view>
+          <view class="s-m">{{item.meta}}</view>
+        </view>
+        <view class="s-rt">
+          <text class="s-c">{{item.revN}}</text>
+          <text class="s-cn">条</text>
+        </view>
+      </view>
+
+      <view class="s-strip" wx:if="{{item.rated}}">
+        <view class="ss g" style="width:{{item.wg}}%"></view>
+        <view class="ss m" style="width:{{item.wm}}%"></view>
+        <view class="ss b" style="width:{{item.wb}}%"></view>
+      </view>
+
+      <block wx:if="{{openShop === item.i}}">
+        <view class="rv" wx:for="{{item.reviews}}" wx:for-item="r" wx:key="u">
+          <view class="rv-hd">
+            <view class="rv-l">
+              <text class="rv-u">{{r.u}}</text>
+              <text wx:if="{{r.t}}" class="rv-t {{r.t === '好评' ? 'g' : (r.t === '中评' ? 'm' : 'b')}}">{{r.t}}</text>
+            </view>
+            <text class="rv-d">{{r.d}}</text>
+          </view>
+          <view class="rv-x">{{r.x}}</view>
+          <view wx:if="{{r.rec}}" class="rv-rec">推荐 · {{r.rec}}</view>
+        </view>
+        <view class="s-fold">收起</view>
+      </block>
+      <block wx:else>
+        <view class="s-first">“{{item.reviews[0].x}}”</view>
+        <view class="s-more {{item.rated ? '' : 'no-bar'}}">
+          <text wx:if="{{item.rated}}">好评 {{item.good}} · 中评 {{item.mid}} · 差评 {{item.bad}}</text>
+          <text wx:else class="s-more-dim">{{item.revN}} 条评价都没有平台标签</text>
+          <text class="s-more-b">展开 ›</text>
+        </view>
+      </block>
+    </view>
+
+    <view class="more" wx:if="{{shopShown < voiceTotal}}" bindtap="moreShops">看更多（还有 {{voiceTotal - shopShown}} 家）</view>
+  </block>
+
+  <view class="foot">
+    <text class="ft-line">菜品与评价为 {{source.d}} 的菜单快照；配图取自「菜品素材库」，其中 {{stats.aiImg}} 道菜的图是 AI 生成的，详情页有标注。</text>
+    <text class="ft-line">月售为平台当时显示的数字，过期不补；菜名里被压缩成「+」的原意是套餐组合。</text>
+    <text class="ft-line">站内不代下单、不含价格：起送价、配送费、满减以美团内为准，点右上「开饭」过去。</text>
+  </view>
+
+  <!-- 菜品详情 -->
+  <view class="mask" wx:if="{{sheet}}" bindtap="closeSheet"></view>
+  <view class="sheet" wx:if="{{sheet}}" catchtap="stop">
+    <view class="sh-top" catchtap="closeSheet"><text class="sh-bar"></text></view>
+
+    <image wx:if="{{sheet.img}}" class="sh-img" src="{{sheet.img}}" mode="aspectFill" />
+    <view wx:else class="sh-ph" style="--c1:{{sheet.c1}};--c2:{{sheet.c2}}"><text class="sh-ch">{{sheet.ch}}</text></view>
+
+    <view class="sh-n">{{sheet.n}}</view>
+    <view class="sh-tags">
+      <text class="tag cat">{{sheet.cat}}</text>
+      <text class="tag sig" wx:if="{{sheet.sig}}">招牌</text>
+      <text class="tag ai" wx:if="{{sheet.ai}}">AI 图</text>
+    </view>
+    <view class="sh-m">
+      <text>{{sheet.shopName}}</text>
+      <text wx:if="{{sheet.zone}}"> · {{sheet.zone}}</text>
+      <text wx:if="{{sheet.sold}}"> · 月售 {{sheet.sold}}</text>
+    </view>
+    <view class="sh-desc" wx:if="{{sheet.desc}}">{{sheet.desc}}</view>
+
+    <block wx:if="{{sheetShop}}">
+      <view class="sh-sec">这家店</view>
+      <view class="sh-shop-m">
+        <text>{{sheetShop.name}}</text>
+        <text wx:if="{{sheetShop.score}}"> · {{sheetShop.score}} 分</text>
+        <text wx:if="{{sheetShop.dist}}"> · {{sheetShop.dist}}</text>
+        <text> · {{sheetShop.n}} 道菜</text>
+      </view>
+
+      <block wx:if="{{sheetShop.reviews.length}}">
+        <view class="sh-sec">这家店的评价<text class="sh-sec-n">{{sheetShop.revN}} 条</text></view>
+        <view class="rv" wx:for="{{sheetShop.reviews}}" wx:for-item="r" wx:key="u">
+          <view class="rv-hd">
+            <view class="rv-l">
+              <text class="rv-u">{{r.u}}</text>
+              <text wx:if="{{r.t}}" class="rv-t {{r.t === '好评' ? 'g' : (r.t === '中评' ? 'm' : 'b')}}">{{r.t}}</text>
+            </view>
+            <text class="rv-d">{{r.d}}</text>
+          </view>
+          <view class="rv-x">{{r.x}}</view>
+          <view wx:if="{{r.rec}}" class="rv-rec">推荐 · {{r.rec}}</view>
+        </view>
+        <view class="sh-more" wx:if="{{sheetShop.revN > sheetShop.reviews.length}}">还有 {{sheetShop.revN - sheetShop.reviews.length}} 条，在「口碑」里看</view>
+      </block>
+    </block>
+
+    <view class="sh-close" catchtap="closeSheet">知道了</view>
+  </view>
+</view>

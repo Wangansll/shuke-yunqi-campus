@@ -1,0 +1,374 @@
+<!-- pages/geely/index.wxml —— 吉利专区：集团概况 + 校招/社招（折叠在页内）+ 真实动态 -->
+<view class="page">
+  <!-- 品牌头：官方字标隐形水印 -->
+  <view class="hero">
+    <view class="h-glow"></view>
+    <view class="h-row">
+      <view class="h-tile"><image class="h-lock" src="/images/brand/geely-lockup-blue.png" mode="aspectFit" /></view>
+      <view class="h-tx">
+        <view class="h-t">吉利专区</view>
+        <view class="h-s">浙江吉利控股集团 · 招聘与动态</view>
+      </view>
+    </view>
+    <view class="h-stats">
+      <view class="hs"><view class="hs-n">12 万+</view><view class="hs-l">员工总数</view></view>
+      <view class="hs"><view class="hs-n">5100 亿+</view><view class="hs-l">资产总值</view></view>
+      <view class="hs"><view class="hs-n">11 年</view><view class="hs-l">世界 500 强</view></view>
+      <view class="hs"><view class="hs-n">1.4 万项</view><view class="hs-l">有效专利</view></view>
+    </view>
+    <view class="h-note">数字取自吉利招聘官网「集团概况」，抓取于 2026-11-17</view>
+  </view>
+
+  <!-- 集团定位 -->
+  <view class="card intro">
+    <view class="c-h">
+      <text class="c-t">集团定位</text>
+      <text class="c-tag">1986 始创 · 总部杭州</text>
+    </view>
+    <view class="i-p">业务涵盖汽车及上下游产业链、智能出行服务、绿色运力、数字科技，定位是智能电动出行和能源服务科技公司。在中国、美国、英国、瑞典、比利时、马来西亚建有整车与动力总成工厂，各类销售网点超 4000 家。</view>
+    <view class="i-brand-t">旗下品牌</view>
+    <view class="i-brands">
+      <view class="bd" wx:for="{{brands}}" wx:key="*this">{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 与学校的关系：横向双节点 -->
+  <view class="card rel">
+    <view class="c-h">
+      <text class="c-t">与学校的关系</text>
+      <text class="c-tag mint">办学举办者</text>
+    </view>
+    <view class="tl">
+      <view class="tl-item">
+        <view class="tl-dot"></view>
+        <view class="tl-date">2020.06</view>
+        <view class="tl-tx">与吉利人才发展集团签订合作办学框架协议</view>
+      </view>
+      <view class="tl-line"></view>
+      <view class="tl-item">
+        <view class="tl-dot on"></view>
+        <view class="tl-date">2023.10</view>
+        <view class="tl-tx">教育部同意举办者变更为「吉利人才发展集团、广西民族大学」</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 三块内容（招聘在前，AI 面试在招聘下面） -->
+  <view class="tabs">
+    <view class="tab {{tab==='campus'?'on':''}}" data-tab="campus" bindtap="switchTab">校园招聘<text class="tab-n">{{oppN}}</text></view>
+    <view class="tab {{tab==='social'?'on':''}}" data-tab="social" bindtap="switchTab">社会招聘<text class="tab-n">{{socN}}</text></view>
+    <view class="tab {{tab==='event'?'on':''}}" data-tab="event" bindtap="switchTab">吉利动态<text class="tab-n">{{newsN}}</text></view>
+    <view class="tab {{tab==='mine'?'on':''}}" data-tab="mine" bindtap="switchTab">我的投递<text class="tab-n" wx:if="{{mineN}}">{{mineN}}</text></view>
+  </view>
+
+  <!-- ================= 校园招聘 ================= -->
+  <block wx:if="{{tab==='campus'}}">
+    <view class="ev-lead">
+      <view class="el-t">学校官网发过的吉利校招与培养项目</view>
+      <view class="el-d">默认先看培养项目（繁星、星砾、创新班这类本校学生真能报的），宣讲会、实习与正式岗在筛选里切换。逐条按原文日期标注，点开就地展开；当季批次与截止时间以校招官网为准。</view>
+    </view>
+
+    <view class="tools">
+      <view class="search">
+        <text class="s-ic">🔍</text>
+        <input class="s-in" value="{{kw}}" placeholder="搜岗位方向、单位、面向对象" placeholder-class="s-ph" confirm-type="search" bindinput="onKw" />
+        <text class="s-x" wx:if="{{kw}}" bindtap="clearKw">✕</text>
+      </view>
+      <scroll-view class="chips" scroll-x enable-flex show-scrollbar="{{false}}">
+        <view class="chip {{kind===item.k?'on':''}}" wx:for="{{kinds}}" wx:key="k" data-k="{{item.k}}" bindtap="pickKind">{{item.n}}</view>
+      </scroll-view>
+      <view class="tools-sum">
+        <text>{{oppView.length}} 条机会</text>
+        <text class="ts-r" wx:if="{{kw}}">关键词「{{kw}}」</text>
+        <text class="ts-go" wx:elif="{{kind!=='all'}}" bindtap="pickAll">全部 {{oppN}} 条 ›</text>
+      </view>
+    </view>
+
+    <view class="crows">
+      <view class="crow" wx:for="{{oppView}}" wx:key="id">
+        <view class="cr-hd" data-id="{{item.id}}" bindtap="toggleOpp">
+          <view class="cr-tx">
+            <view class="cr-t"><text class="o-kind k-{{item.kind}}">{{item.kindName}}</text>{{item.title}}</view>
+            <view class="cr-m">{{item.org}}<text wx:if="{{item.dirTxt}}"> · {{item.dirTxt}}</text></view>
+          </view>
+          <view class="cr-x">
+            <text class="cr-st {{item.stCls}}" wx:if="{{item.st}}">{{item.stName}}</text>
+            <text class="arw {{openId===item.id?'on':''}}">▾</text>
+          </view>
+        </view>
+
+        <view class="cr-bd" wx:if="{{openId===item.id}}">
+          <view class="cr-sum" wx:if="{{item.sum}}">{{item.sum}}</view>
+          <view class="cr-row" wx:if="{{item.target}}"><text class="cr-l">面向</text>{{item.target}}</view>
+          <view class="cr-row" wx:if="{{item.scale}}"><text class="cr-l">规模</text>{{item.scale}}</view>
+          <view class="cr-flow" wx:if="{{item.flow.length}}">
+            <view class="cr-l">流程</view>
+            <view class="fl" wx:for="{{item.flow}}" wx:for-item="f" wx:key="*this">
+              <text class="fl-n">{{index+1}}</text><text class="fl-t">{{f}}</text>
+            </view>
+          </view>
+          <view class="cr-src">原文 {{item.d}} · 学校官网</view>
+          <view class="cr-act">
+            <view class="cb {{item.fav?'on':''}}" catchtap="toggleFav" data-id="{{item.id}}">{{item.fav?'★ 已收藏':'☆ 收藏'}}</view>
+            <view class="cb" catchtap="cycleApply" data-id="{{item.id}}">{{item.st?'记投递 → '+item.stName:'记一笔投递'}}</view>
+            <view class="cb main" catchtap="goInterview" data-id="{{item.id}}">练面试</view>
+            <view class="cb" data-url="{{item.url}}" catchtap="copyLink">原文</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty" wx:if="{{!oppView.length}}">
+        <view class="e-t">没有匹配的机会</view>
+        <view class="e-d">换一个关键词，或点「全部」看完整 {{oppN}} 条。</view>
+      </view>
+    </view>
+
+    <!-- AI 模拟面试：紧接机会列表，不用滑到底 -->
+    <template is="ivCard" wx:if="{{tab==='campus'}}" />
+
+    <!-- 校招官网：批次与网申在官网推进 -->
+    <view class="soc" data-url="{{campus.url}}" data-name="校招官网" bindtap="copyLink">
+      <view class="soc-l">
+        <view class="soc-n">{{campus.n}}</view>
+        <view class="soc-u">{{campus.u}}</view>
+        <view class="soc-d">当季批次、岗位与网申入口在官网实时更新，站内只记学校发过的事实，不抄它的岗位表。</view>
+      </view>
+      <view class="soc-btn">复制</view>
+    </view>
+
+    <!-- 上岸去向：原文里写明的单位与岗位 -->
+    <view class="grp">
+      <view class="grp-h">
+        <view class="grp-t">这些项目最后去哪</view>
+        <view class="grp-n">{{outcomes.length}}</view>
+      </view>
+      <view class="out" wx:for="{{outcomes}}" wx:key="url" data-url="{{item.url}}" bindtap="copyLink">
+        <view class="ou-who">{{item.who}}</view>
+        <view class="ou-bd">
+          <view class="ou-to">{{item.to}}</view>
+          <view class="ou-pos">{{item.pos}}</view>
+        </view>
+        <view class="ou-go">›</view>
+      </view>
+    </view>
+
+    <!-- 校内招聘动作：标题在上、日期与栏目在下，避免日期长短不齐把正文挤歪 -->
+    <view class="card panel" wx:if="{{hireN}}">
+      <view class="c-h">
+        <text class="c-t">吉利在校内的招聘动作</text>
+        <text class="c-tag mint">{{hireN}} 条</text>
+      </view>
+      <view class="hi" wx:for="{{hires}}" wx:key="url" data-url="{{item.url}}" data-name="{{item.t}}" bindtap="copyLink">
+        <view class="hi-t">{{item.t}}</view>
+        <view class="hi-m">
+          <text class="hi-d">{{item.d || '原文未标日期'}}</text>
+          <text class="hi-s" wx:if="{{item.s}}">{{item.s}}</text>
+        </view>
+      </view>
+      <view class="p-tip">宣讲会、实习生项目、入职喜报都在学校官网与院系网上发过，点一条复制原文链接。</view>
+    </view>
+
+    <view class="card panel">
+      <view class="c-h"><text class="c-t">投递前先看这四件事</text></view>
+      <view class="steps">
+        <view class="st" wx:for="{{steps}}" wx:key="*this">
+          <view class="st-no">{{index+1}}</view>
+          <view class="st-tx">{{item}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="sec-foot">
+      机会的名称、岗位方向、面向对象、流程环节都摘自学校官网原文，原文没写的薪资与截止时间这里不补。
+      场次是发布时的事实记录，不等于当前在招。
+    </view>
+  </block>
+
+  <!-- ================= 社会招聘 ================= -->
+  <block wx:if="{{tab==='social'}}">
+    <view class="ev-lead">
+      <view class="el-t">官网在招的吉利社招岗位</view>
+      <view class="el-d">官网在招 {{socTotal}} 个岗位，这里列发布时间最新的 {{socN}} 个，标题、单位、工作地、发布时间照官网抄，抓取于 {{socBuilt}}。点一条就地展开。</view>
+    </view>
+
+    <view class="tools">
+      <view class="search">
+        <text class="s-ic">🔍</text>
+        <input class="s-in" value="{{socKw}}" placeholder="搜岗位名、单位、城市" placeholder-class="s-ph" confirm-type="search" bindinput="onSocKw" />
+        <text class="s-x" wx:if="{{socKw}}" bindtap="clearSocKw">✕</text>
+      </view>
+      <view class="tools-sum">
+        <text>{{socView.length}} / {{socN}} 个岗位</text>
+        <text class="ts-r" wx:if="{{socKw}}">关键词「{{socKw}}」</text>
+      </view>
+    </view>
+
+    <view class="crows">
+      <view class="crow" wx:for="{{socView}}" wx:key="id">
+        <view class="cr-hd" data-id="{{item.id}}" bindtap="toggleSoc">
+          <view class="cr-tx">
+            <view class="cr-t">{{item.t}}</view>
+            <view class="cr-m">{{item.org}}<text wx:if="{{item.city}}"> · {{item.city}}</text><text wx:if="{{item.zn}}"> · {{item.zn}}</text><text class="cr-inline-d"> · {{item.d}}</text></view>
+          </view>
+          <view class="cr-x">
+            <text class="arw {{openSoc===item.id?'on':''}}">▾</text>
+          </view>
+        </view>
+
+        <view class="cr-bd" wx:if="{{openSoc===item.id}}">
+          <view class="cr-row"><text class="cr-l">招聘单位</text>{{item.org}}</view>
+          <view class="cr-row" wx:if="{{item.city}}"><text class="cr-l">工作地</text>{{item.city}}</view>
+          <view class="cr-row" wx:if="{{item.zn}}"><text class="cr-l">岗位类</text>{{item.zn}}</view>
+          <view class="cr-row" wx:if="{{item.code}}"><text class="cr-l">岗位编号</text>{{item.code}}</view>
+          <view class="cr-row"><text class="cr-l">发布</text>{{item.at}}</view>
+          <view class="cr-src">来源：job.geely.com 社招官网首屏，未补薪资与名额</view>
+          <view class="cr-act">
+            <view class="cb main" catchtap="copyLink" data-url="{{socUrl}}" data-name="社招官网">去官网投递</view>
+            <view class="cb" catchtap="copySocTitle" data-id="{{item.id}}">复制岗位名</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty" wx:if="{{!socView.length}}">
+        <view class="e-t">没有匹配的岗位</view>
+        <view class="e-d">换个关键词，或清空搜索看完整 {{socN}} 个。</view>
+      </view>
+    </view>
+
+    <view class="soc" wx:for="{{socials}}" wx:key="id" data-url="{{item.url}}" data-name="{{item.n}}" bindtap="copyLink">
+      <view class="soc-l">
+        <view class="soc-n">{{item.n}}</view>
+        <view class="soc-u">{{item.u}}</view>
+        <view class="soc-d">{{item.d}}</view>
+      </view>
+      <view class="soc-btn">复制</view>
+    </view>
+
+    <view class="p-foot">社招由各业务集团分开发布，控股与汽车集团入口不同；站内只做目录，不代投、不转存简历。</view>
+  </block>
+
+  <!-- ================= 吉利动态 ================= -->
+  <block wx:if="{{tab==='event'}}">
+    <view class="ev-meta">共 {{newsN}} 条，来源：学校官网各栏目，抓取于 {{built}}</view>
+    <view class="card ev-list">
+      <view class="ev" wx:for="{{news}}" wx:key="url" data-url="{{item.url}}" data-name="{{item.t}}" bindtap="copyLink">
+        <view class="ev-d-col">
+          <text class="ev-d">{{item.d || '—'}}</text>
+          <text class="ev-src">{{item.s}}</text>
+        </view>
+        <view class="ev-bd">
+          <view class="ev-t">{{item.t}}</view>
+          <view class="ev-abs">{{item.abs}}</view>
+          <view class="ev-go">复制原文链接 ›</view>
+        </view>
+      </view>
+    </view>
+    <view class="p-foot">早期文章的页面本身没标年份，这里只标栏目与链接，不替官方补日期。</view>
+  </block>
+
+  <!-- ================= 我的投递 ================= -->
+  <block wx:if="{{tab==='mine'}}">
+    <view class="mine-top">
+      <view class="mt-cell"><view class="mt-n">{{favN}}</view><view class="mt-l">收藏</view></view>
+      <view class="mt-cell"><view class="mt-n">{{mineN}}</view><view class="mt-l">有进度</view></view>
+      <view class="mt-cell"><view class="mt-n">{{prepDone}}/{{prepN}}</view><view class="mt-l">材料备好</view></view>
+    </view>
+
+    <view class="note-card">
+      <text class="nc-i">🔒</text>
+      <text class="nc-t">收藏与投递进度只存在本机，不上传、不代投；真投递按原文或官网里的方式走。</text>
+    </view>
+
+    <block wx:for="{{applyGroups}}" wx:key="k" wx:for-item="g">
+      <view class="grp">
+        <view class="grp-h">
+          <view class="grp-t">{{g.n}}</view>
+          <view class="grp-n">{{g.cnt}}</view>
+        </view>
+        <view class="mi" wx:for="{{g.list}}" wx:key="id">
+          <view class="mi-tx" data-id="{{item.id}}" bindtap="toggleOpp">
+            <view class="mi-t">{{item.title}}</view>
+            <view class="mi-m">{{item.org}} · 原文 {{item.d}}</view>
+          </view>
+          <view class="cb {{item.stCls}}" catchtap="cycleApply" data-id="{{item.id}}">{{item.stName}}</view>
+        </view>
+      </view>
+    </block>
+
+    <view class="grp" wx:if="{{favPosts.length}}">
+      <view class="grp-h">
+        <view class="grp-t">收藏待投</view>
+        <view class="grp-n">{{favPosts.length}}</view>
+      </view>
+      <view class="mi" wx:for="{{favPosts}}" wx:key="id">
+        <view class="mi-tx" bindtap="toggleFav" data-id="{{item.id}}">
+          <view class="mi-t">{{item.title}}</view>
+          <view class="mi-m">{{item.org}} · 原文 {{item.d}}</view>
+        </view>
+        <view class="cb" catchtap="cycleApply" data-id="{{item.id}}">记投递</view>
+      </view>
+    </view>
+
+    <view class="grp empty-grp" wx:if="{{!applyGroups.length && !favPosts.length}}">
+      <view class="e-t">还没有记录</view>
+      <view class="e-d">到「校园招聘」展开一条机会，点 ☆ 收藏或记一笔投递。</view>
+      <view class="e-bt" data-tab="campus" bindtap="switchTab">去看机会</view>
+    </view>
+
+    <view class="grp">
+      <view class="grp-h">
+        <view class="grp-t">投递材料清单</view>
+        <view class="grp-n">{{prepDone}}/{{prepN}}</view>
+      </view>
+      <view class="prep {{prep[item.k]?'on':''}}" wx:for="{{prepItems}}" wx:key="k" data-k="{{item.k}}" bindtap="togglePrep">
+        <view class="pp-bx">{{prep[item.k]?'✓':''}}</view>
+        <view class="pp-tx">
+          <view class="pp-n">{{item.n}}</view>
+          <view class="pp-d">{{item.d}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="sec-foot">这些记录只在本机：换手机、清缓存就没了，重要节点自己再记一份。</view>
+  </block>
+
+  <!-- 社招 / 动态 / 我的投递 页签也留一个面试入口（校招页签的入口在列表正下方） -->
+  <template is="ivCard" wx:if="{{tab!=='campus'}}" />
+
+  <view class="footnote">本页只收吉利系（吉利控股、吉利汽车集团、吉利汽车研究院、极氪、领克、吉利百矿等）的校招与社招：校招机会与社招岗位都是官网发过的原文，动态来自官网 {{total}} 条原文的筛选，不改写、不补薪资、不替企业承诺。</view>
+</view>
+
+<!-- 面试入口卡：三档，面完给分 -->
+<template name="ivCard">
+  <view class="card interview">
+    <view class="c-h">
+      <text class="c-t">AI 模拟面试</text>
+      <text class="c-tag mint">3 档 · 面完给分</text>
+    </view>
+    <view class="iv-row" data-track="normal" bindtap="goInterview">
+      <view class="iv-ic">💬</view>
+      <view class="iv-bd">
+        <view class="iv-n">普通面试</view>
+        <view class="iv-d">自我介绍、为什么选吉利、一段经历、优劣势与规划</view>
+      </view>
+      <view class="iv-go">进入 ›</view>
+    </view>
+    <view class="iv-row" data-track="pro" bindtap="goInterview">
+      <view class="iv-ic">🎯</view>
+      <view class="iv-bd">
+        <view class="iv-n">专业面试</view>
+        <view class="iv-d">从上面某条吉利机会的岗位方向出题，先选机会再开始</view>
+      </view>
+      <view class="iv-go">进入 ›</view>
+    </view>
+    <view class="iv-row" data-track="stress" bindtap="goInterview">
+      <view class="iv-ic">🔥</view>
+      <view class="iv-bd">
+        <view class="iv-n">压力面试</view>
+        <view class="iv-d">每答追一层：要细节、要数据、要反例</view>
+      </view>
+      <view class="iv-go">进入 ›</view>
+    </view>
+    <view class="p-tip">面完给总分与四维分数（结构、岗位匹配、细节数据、表达完整度），再逐题标出答到和漏掉的要点。分数在本地算，点评由模型写。</view>
+  </view>
+</template>

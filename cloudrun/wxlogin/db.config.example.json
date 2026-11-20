@@ -1,0 +1,8 @@
+{
+  "_说明": "复制成 db.config.json 并填真实值；这个文件随服务一起部署，容器启动时自动建表。也可以用环境变量 MYSQL_HOST / MYSQL_PORT / MYSQL_USER / MYSQL_PASSWORD / MYSQL_DATABASE",
+  "host": "rm-xxxxxxxx.mysql.rds.aliyuncs.com",
+  "port": 3306,
+  "user": "yunqi_app",
+  "password": "改成你的密码",
+  "database": "yunqi"
+}

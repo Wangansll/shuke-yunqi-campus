@@ -1,0 +1,173 @@
+<!-- pages/service/index.wxml —— 服务页 -->
+<view class="page">
+  <view class="top">
+    <view class="t-en">CAMPUS · SERVICES</view>
+    <view class="t1">校园服务</view>
+  </view>
+
+  <!-- 求职准备：招聘在前、面试在后，两块都落在吉利专区/面试模块里 -->
+  <view class="sec-h">
+    <view class="sec-l">
+      <view class="sec-t">求职准备</view>
+      <view class="sec-e">CAREER</view>
+    </view>
+    <view class="rt">站内可查 · 可练</view>
+  </view>
+  <view class="grid">
+    <view class="tile wide ivcard gcard-s" bindtap="goCareer">
+      <view class="ic lg gwhite"><image class="g-lock-s" src="/images/brand/geely-lockup-blue.png" mode="aspectFit" /></view>
+      <view class="tx">
+        <view class="sn">吉利招聘</view>
+        <view class="sd">校招 7 条机会、社招 15 个岗位，点开就地展开</view>
+      </view>
+      <view class="go">›</view>
+    </view>
+    <view class="tile wide ivcard" bindtap="goInterview">
+      <view class="ic lg"><image class="ic-img" src="/images/svc/mic.png" mode="aspectFit" /></view>
+      <view class="tx">
+        <view class="sn">AI 模拟面试</view>
+        <view class="sd">普通 / 专业（按吉利机会）/ 压力 三档，逐题打分复盘</view>
+      </view>
+      <view class="go">›</view>
+    </view>
+  </view>
+
+  <!-- 生活服务：主卡 + 双列小盒 -->
+  <view class="sec-h">
+    <view class="sec-l">
+      <view class="sec-t">生活服务</view>
+      <view class="sec-e">DAILY LIFE</view>
+    </view>
+    <view class="rt">6 项 · 仅点餐需跳转</view>
+  </view>
+  <view class="grid">
+    <view class="tile wide feat" data-d="{{feat.d}}" bindtap="openDetail" wx:if="{{feat}}">
+      <view class="feat-in">
+        <view class="ic lg{{feat.logo?' pic':''}}"><image wx:if="{{feat.logo}}" class="ic-logo" src="{{feat.logo}}" mode="aspectFit" /><image wx:else class="ic-img" src="{{feat.icon}}" mode="aspectFit" /></view>
+        <view class="tx">
+          <view class="sn">{{feat.n}}</view>
+          <view class="sd">食堂档口 · 周边外卖实价</view>
+        </view>
+        <view class="feat-tag">美团</view>
+      </view>
+      <view class="feat-addr">
+        <image class="fa-pin-img" src="/images/svc/pin.png" mode="aspectFit" />
+        <text class="fa-tx">默认地址：{{addr.name}}</text>
+      </view>
+    </view>
+
+    <view class="tile half" wx:for="{{lifeCells}}" wx:key="d" data-d="{{item.d}}" bindtap="openDetail">
+      <view class="idx">0{{index + 1}}</view>
+      <view class="ic{{item.logo?' pic':''}}"><image wx:if="{{item.logo}}" class="ic-logo" src="{{item.logo}}" mode="aspectFit" /><image wx:else class="ic-img" src="{{item.icon}}" mode="aspectFit" /></view>
+      <view class="sn">{{item.n}}</view>
+      <view class="sd">{{item.s}}</view>
+    </view>
+
+    <view class="tile wide tail" data-d="{{tail.d}}" bindtap="openDetail" wx:if="{{tail}}">
+      <view class="ic{{tail.logo?' pic':''}}"><image wx:if="{{tail.logo}}" class="ic-logo" src="{{tail.logo}}" mode="aspectFit" /><image wx:else class="ic-img" src="{{tail.icon}}" mode="aspectFit" /></view>
+      <view class="tx"><view class="sn">{{tail.n}}</view><view class="sd">{{tail.s}}</view></view>
+      <view class="go">›</view>
+    </view>
+  </view>
+
+  <!-- 在校园里：导览（站内可查，不跳走） -->
+  <view class="sec-h">
+    <view class="sec-l">
+      <view class="sec-t">在校园里</view>
+      <view class="sec-e">ON CAMPUS</view>
+    </view>
+    <view class="rt">站内可查</view>
+  </view>
+  <view class="grid">
+    <view class="tile wide tour" bindtap="goLife">
+      <view class="tour-in">
+        <view class="ic lg"><image class="ic-img" src="/images/svc/map.png" mode="aspectFit" /></view>
+        <view class="tx">
+          <view class="sn">校园导览</view>
+          <view class="sd">四个岭怎么分 · 食堂档口 · 摆渡车 · 常用电话</view>
+        </view>
+        <view class="go">›</view>
+      </view>
+      <view class="tour-chips">
+        <text class="tchip">一岭 · 医务室</text>
+        <text class="tchip">三岭 · 螺蛳粉</text>
+        <text class="tchip">摆渡车 7:20—22:40</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习成长：两个平台大卡 + 三个小盒 -->
+  <view class="sec-h">
+    <view class="sec-l">
+      <view class="sec-t">学习成长</view>
+      <view class="sec-e">STUDY / GROWTH</view>
+    </view>
+    <view class="rt">含校内平台</view>
+  </view>
+  <view class="grid">
+    <view class="tile half plat" wx:for="{{platCells}}" wx:key="d" data-d="{{item.d}}" bindtap="openDetail">
+      <view class="ic alt{{item.logo?' pic':''}}"><image wx:if="{{item.logo}}" class="ic-logo" src="{{item.logo}}" mode="aspectFit" /><image wx:else class="ic-img" src="{{item.icon}}" mode="aspectFit" /></view>
+      <view class="sn">{{item.n}}</view>
+      <view class="sd">{{item.s}}</view>
+      <view class="plat-go">打开入口 ›</view>
+    </view>
+
+    <view class="tile third" wx:for="{{studySmall}}" wx:key="d" data-d="{{item.d}}" bindtap="openDetail">
+      <view class="ic sm alt{{item.logo?' pic':''}}"><image wx:if="{{item.logo}}" class="ic-logo" src="{{item.logo}}" mode="aspectFit" /><image wx:else class="ic-img" src="{{item.icon}}" mode="aspectFit" /></view>
+      <view class="sn sm">{{item.n}}</view>
+    </view>
+  </view>
+
+  <view class="addr card">
+    <view class="addr-t">默认收货地址</view>
+    <view class="addr-n"><image class="addr-pin" src="/images/svc/pin.png" mode="aspectFit" /> {{addr.name}}</view>
+    <view class="addr-d">{{addr.detail}}</view>
+  </view>
+
+  <!-- 站外入口：从首页搬过来。小程序打不开外部网页/App，只能复制链接或跳小程序 -->
+  <view class="sec-h">
+    <view class="sec-l">
+      <view class="sec-t">站外入口</view>
+      <view class="sec-e">OUTSIDE LINKS</view>
+    </view>
+    <view class="rt">需跳转</view>
+  </view>
+  <view class="jump card">
+    <view class="j-row" wx:for="{{jumps}}" wx:key="k" data-k="{{item.k}}" bindtap="doJump">
+      <view class="j-ic"><image class="j-img" src="{{item.ic}}" mode="aspectFit" /></view>
+      <view class="j-tx">
+        <view class="j-n">{{item.n}}<text class="j-tag">{{item.tag}}</text></view>
+        <view class="j-s">{{item.s}}</view>
+      </view>
+      <view class="j-go">跳转 ›</view>
+    </view>
+  </view>
+  <view class="jump-note">这三样在微信里进不去：天猫没有微信小程序，教务系统是校内 IP，易校园是 App。点了会复制链接并说明原因。</view>
+</view>
+
+<!-- 详情弹层 -->
+<view class="mask" wx:if="{{showDetail}}" bindtap="closeDetail"></view>
+<view class="sheet {{showDetail?'show':''}}" wx:if="{{showDetail}}">
+  <view class="sh-h">
+    <view class="sh-title">{{detailTitle}}</view>
+    <view class="sh-x" bindtap="closeDetail">×</view>
+  </view>
+  <view class="sh-body">
+    <view class="hero-tag">{{detailTag}}</view>
+    <view class="desc">{{detailDesc}}</view>
+
+    <view class="plat" wx:if="{{hasPlatform}}">
+      <view class="plat-name">对接平台：{{plat.name}}</view>
+      <view class="plat-note">{{plat.note}}</view>
+      <view class="plat-btns">
+        <view class="pb main" bindtap="openApp">{{btnMain}}</view>
+        <view class="pb" wx:if="{{btnAlt}}" bindtap="openWeb">{{btnAlt}}</view>
+      </view>
+    </view>
+    <view class="no-data" wx:else>
+      <view class="nd-ic">◌</view>
+      <view>暂无该数据源</view>
+      <view class="nd-s">相关数据需登录对应平台查看</view>
+    </view>
+  </view>
+</view>

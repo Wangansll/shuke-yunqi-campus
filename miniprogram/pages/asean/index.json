@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "东盟专区",
+  "navigationBarBackgroundColor": "#0A2C27",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#FBF5E9",
+  "backgroundColorTop": "#0A2C27",
+  "backgroundColorBottom": "#FBF5E9",
+  "usingComponents": {}
+}

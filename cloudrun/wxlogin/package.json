@@ -1,0 +1,14 @@
+{
+  "name": "yunqi-wxlogin",
+  "version": "2.0.0",
+  "private": true,
+  "description": "数科云栖校园 · 云托管服务（登录 + 报修/互助数据接口）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0"
+  }
+}

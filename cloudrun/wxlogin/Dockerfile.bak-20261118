@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json ./
+RUN npm install --omit=dev --registry=https://registry.npmmirror.com
+# server.js 是入口；dbconfig.js 是数据库连接配置（可选，缺了会降级为 not-configured）
+# corpus.json 是整站百科语料（可选，缺了 /api/kb/search 返回空）
+# kdconfig.js 是快递100 凭据（可选，缺了就用免费公开通道）
+COPY server.js ./
+COPY dbconfig.js* ./
+COPY corpus.json* ./
+COPY kdconfig.js* ./
+# 外卖橱窗的菜品图（静态托管在 /img 下，不上小程序包）
+COPY img* ./img
+ENV PORT=80
+EXPOSE 80
+CMD ["node", "server.js"]

@@ -1,0 +1,176 @@
+<!-- pages/interview/index.wxml —— 模拟面试（普通 / 专业 / 压力） -->
+<view class="page">
+
+  <!-- ============ 准备页 ============ -->
+  <block wx:if="{{step==='setup'}}">
+    <view class="intro">
+      <view class="i-t">模拟面试</view>
+      <view class="i-d">三档练习：通用问法、按吉利机会的岗位方向问、连环追问。面完给分数和逐题复盘，分数在本地算，断网也在。</view>
+    </view>
+
+    <view class="card">
+      <view class="s-t">选一档</view>
+      <view class="lv-row">
+        <view class="lv {{level===item.k?'on':''}}" wx:for="{{levels}}" wx:key="k"
+          data-k="{{item.k}}" bindtap="pickLevel">
+          <view class="lv-n">{{item.n}}</view>
+          <view class="lv-s">{{item.s}}</view>
+        </view>
+      </view>
+      <view class="lv-d" wx:for="{{levels}}" wx:key="k" wx:if="{{level===item.k}}">{{item.d}}</view>
+    </view>
+
+    <!-- 专业面：先选一条吉利机会，题目从它的方向与流程出 -->
+    <view class="card" wx:if="{{level==='pro'}}">
+      <view class="c-h">
+        <text class="c-t">选一条岗位</text>
+        <text class="c-n">{{jobs.length}} 条吉利机会</text>
+      </view>
+      <view class="c-sub" wx:if="{{!jobName}}">题目会从这条机会的岗位方向与流程里出，先挑一个你想练的。</view>
+      <view class="c-sub on" wx:else>已选：{{jobName}}</view>
+      <scroll-view class="joblist" scroll-y>
+        <view class="ji {{jobUrl===item.id?'on':''}}" wx:for="{{jobs}}" wx:key="id"
+          data-id="{{item.id}}" bindtap="pickJob">
+          <view class="ji-co">{{item.kind}} · {{item.co}}</view>
+          <view class="ji-pos">{{item.pos}}</view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="card">
+      <view class="c-h"><text class="c-t">怎么答</text></view>
+      <view class="modes">
+        <view class="mode {{mode==='text'?'on':''}}" data-mode="text" bindtap="pickMode">
+          <view class="md-n">文字作答</view>
+          <view class="md-d">打字，随时改</view>
+        </view>
+        <view class="mode {{mode==='voice'?'on':''}}" wx:if="{{level==='pro'}}" data-mode="voice" bindtap="pickMode">
+          <view class="md-n">语音作答</view>
+          <view class="md-d">说出回答，自动转成文字（仅专业档）</view>
+        </view>
+      </view>
+
+      <view class="probe" wx:if="{{level==='pro'}}" bindtap="probeVoice">
+        {{probing?'正在检测模型音频能力…':'检测当前模型能否直接听语音 ›'}}
+      </view>
+
+      <view class="s-t mt">你的背景（可选）</view>
+      <textarea class="profile" value="{{profile}}" placeholder="专业、年级、一段相关经历。写了面试官会顺着问。"
+        maxlength="300" auto-height bindinput="onProfile" />
+    </view>
+
+    <view class="note">
+      分数看四件事：结构、岗位匹配、细节数据、表达完整度；评价只是练习参考，不代表任何录用结论。
+    </view>
+
+    <view class="start {{modelReady?'':'lazy'}}" bindtap="start">
+      {{modelReady ? '开始面试' : '模型未就绪，开始后仅本地评分'}}
+    </view>
+    <view class="model" wx:if="{{modelReady}}">面试官由 {{modelName}} 驱动</view>
+  </block>
+
+  <!-- ============ 答题页 ============ -->
+  <block wx:if="{{step==='chat'}}">
+    <view class="head">
+      <view class="h-l">
+        <view class="h-t">{{level==='pro'?'专业面':(level==='stress'?'压力面':'普通面')}}</view>
+        <view class="h-sub">第 {{qIndex}} / {{totalQ}} 题<text wx:if="{{jobName}}"> · {{jobName}}</text></view>
+      </view>
+      <view class="finish" bindtap="finish">结束并复盘</view>
+    </view>
+
+    <scroll-view class="msgs" scroll-y scroll-into-view="{{endAnchor}}" enhanced show-scrollbar="{{false}}">
+      <block wx:for="{{messages}}" wx:key="id">
+        <view class="msg {{item.role}}">
+          <view class="bubble {{item.role==='assistant'?'ai':''}}">
+            <text wx:if="{{item.disp}}">{{item.disp}}</text>
+            <text class="typing" wx:if="{{item.streaming && !item.disp}}">面试官正在看你的回答…</text>
+            <text class="cursor" wx:if="{{item.streaming && item.disp}}">▍</text>
+          </view>
+        </view>
+      </block>
+      <view id="btA" class="anchor"></view>
+      <view id="btB" class="anchor"></view>
+    </scroll-view>
+
+    <view class="inputbar">
+      <view class="rec {{recording?'on':''}}" wx:if="{{mode==='voice' && level==='pro'}}" bindtap="toggleRecord">
+        {{asrBusy?'…':(recording?'停':'🎙')}}
+      </view>
+      <textarea class="cin" value="{{input}}" placeholder="{{asrBusy?'正在转成文字…':(mode==='voice' && level==='pro'?'点麦克风说话，转好可再改，也能直接打字…':'输入你的回答…')}}"
+        confirm-type="send" auto-height maxlength="-1" cursor-spacing="24" show-confirm-bar="{{false}}"
+        bindinput="onInput" bindconfirm="send" disabled="{{generating}}" />
+      <view class="cbtn {{generating?'stop':''}}" bindtap="onSendOrStop">{{generating?'停止':'提交'}}</view>
+    </view>
+
+    <!-- 答完这题、面试官也点评完了，才给下一题 -->
+    <view class="nextbar" wx:if="{{answered && !generating && !awaitFollow}}">
+      <view class="next {{isLast?'done':''}}" bindtap="next">{{isLast ? '看分数与复盘' : '下一题 ›'}}</view>
+    </view>
+    <view class="waitbar" wx:if="{{awaitFollow && !generating}}">面试官在追问，接着答就好</view>
+  </block>
+
+  <!-- ============ 复盘页 ============ -->
+  <block wx:if="{{step==='report'}}">
+    <view class="score-card">
+      <view class="sc-l">
+        <view class="sc-num {{summary.total>=85?'hi':(summary.total>=70?'mid':'low')}}">{{summary.total}}</view>
+        <view class="sc-unit">分</view>
+      </view>
+      <view class="sc-r">
+        <view class="sc-lv">{{summary.level}}</view>
+        <view class="sc-d">{{level==='pro'?'专业面':(level==='stress'?'压力面':'普通面')}} · 共 {{answers.length}} 题</view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="c-h"><text class="c-t">四个维度</text></view>
+      <view class="dim" wx:for="{{summary.dims}}" wx:key="k">
+        <view class="dm-top">
+          <text class="dm-n">{{item.n}}</text>
+          <text class="dm-v">{{item.v}}</text>
+        </view>
+        <view class="dm-bar"><view class="dm-in {{item.v>=80?'hi':(item.v>=60?'mid':'low')}}" style="width:{{item.v}}%"></view></view>
+      </view>
+      <view class="dm-tip">{{summary.advice}}</view>
+    </view>
+
+    <view class="card">
+      <view class="c-h">
+        <text class="c-t">逐题复盘</text>
+        <text class="c-n">共 {{answers.length}} 题</text>
+      </view>
+      <view class="qa" wx:for="{{answers}}" wx:key="q">
+        <view class="qa-h">
+          <text class="qa-i">Q{{index+1}}</text>
+          <text class="qa-q">{{item.q}}</text>
+          <text class="qa-p {{item.pt>=80?'hi':(item.pt>=60?'mid':'low')}}">{{item.pt}}</text>
+        </view>
+        <view class="qa-a">你的回答：{{item.aShort}}</view>
+        <view class="qa-tags" wx:if="{{item.hit.length}}">
+          <text class="tg hit" wx:for="{{item.hit}}" wx:for-item="h" wx:key="*this">✓ {{h}}</text>
+        </view>
+        <view class="qa-tags" wx:if="{{item.miss.length}}">
+          <text class="tg miss" wx:for="{{item.miss}}" wx:for-item="m" wx:key="*this">缺 {{m}}</text>
+          <text class="tg more" wx:if="{{item.missRest}}">另有 {{item.missRest}} 项没提到</text>
+        </view>
+        <view class="qa-tip">{{item.tip}}</view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{review}}">
+      <view class="c-h">
+        <text class="c-t">面试官复盘</text>
+        <text class="c-n" wx:if="{{generating}}">生成中…</text>
+      </view>
+      <view class="rv">{{review}}</view>
+    </view>
+
+    <view class="rep-btns">
+      <view class="rb" bindtap="backToSetup">换一档再练</view>
+      <view class="rb main" bindtap="openJob" wx:if="{{jobUrl}}">复制机会原文链接</view>
+      <view class="rb main" bindtap="restart" wx:else>再来一轮</view>
+    </view>
+    <view class="note">分数由本地规则按回答内容计算，面试官点评由模型生成；不构成任何录用结论。</view>
+  </block>
+</view>

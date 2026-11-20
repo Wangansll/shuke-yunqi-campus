@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>视频面试演练 · 数科云栖校园</title>
+<style>
+  :root { --blue:#1B54C4; --blue-2:#2B6FE8; --bg:#F5F7FB; --card:#fff; --tx:#0F1A33; --sub:#6B7789; --line:#E5EDFB; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--tx); }
+  .wrap { max-width:560px; margin:0 auto; padding:20px 16px 40px; }
+  .head h1 { font-size:20px; }
+  .head p { font-size:13px; color:var(--sub); margin-top:6px; line-height:1.6; }
+  .card { background:var(--card); border-radius:18px; padding:18px; margin-top:16px; box-shadow:0 2px 10px rgba(30,60,120,.06); }
+  .stage { position:relative; width:100%; aspect-ratio:4/3; background:#0E1B33; border-radius:16px; overflow:hidden; }
+  video { width:100%; height:100%; object-fit:cover; }
+  .remote { position:absolute; right:12px; bottom:12px; width:38%; aspect-ratio:4/3; border-radius:12px; background:#1B335C; border:1px solid rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.7); font-size:12px; }
+  .local-tag { position:absolute; left:12px; top:12px; font-size:11px; color:#fff; background:rgba(0,0,0,.4); padding:4px 10px; border-radius:10px; }
+  .btns { display:flex; gap:10px; margin-top:16px; }
+  .btn { flex:1; border:0; border-radius:24px; padding:13px; font-size:14px; font-weight:700; color:#fff; background:linear-gradient(135deg,var(--blue-2),var(--blue)); }
+  .btn.ghost { background:#EDF3FE; color:var(--blue); }
+  .btn:disabled { opacity:.5; }
+  .note { font-size:12px; color:var(--sub); line-height:1.7; margin-top:12px; }
+  .warn { font-size:12px; color:#B4761F; background:#FFF7E8; border-radius:12px; padding:12px; line-height:1.7; margin-top:12px; }
+  .hidden { display:none; }
+  .foot { font-size:11.5px; color:#9AA4B2; line-height:1.7; margin-top:18px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>视频面试演练 <span style="font-size:11px;color:#B4761F;background:#FFF7E8;border-radius:10px;padding:3px 10px;margin-left:8px;">档位3 · H5</span></h1>
+    <p>浏览器内摄像头本地预览；实时视频连线需 RTC 服务与信令后端，当前为离线演示占位。</p>
+  </div>
+
+  <section class="card">
+    <div class="stage">
+      <video id="localVideo" autoplay playsinline muted></video>
+      <div class="local-tag">本地画面</div>
+      <div class="remote" id="remoteSlot">面试官画面（待接入）</div>
+    </div>
+    <div class="btns">
+      <button class="btn" id="camBtn">开启摄像头</button>
+      <button class="btn ghost" id="rtcBtn" disabled>接入实时连线</button>
+    </div>
+    <div class="warn">实时视频通话在小程序原生侧受主体与类目白名单限制，个人主体无法开通 VoIP；本页只能在浏览器 H5 中运行。真正双向连麦需部署 RTC（如腾讯云 TRTC）与信令服务，并完成隐私告知与 AI 内容标注。</div>
+    <p class="note">未接入 RTC 前，远端画面保持占位；本页不采集、不上传视频流。摄像头仅在本机预览。</p>
+  </section>
+
+  <div class="foot">数科云栖校园 · 吉利专区 · 视频面试 H5 演示</div>
+</div>
+
+<script>
+// ===== 配置 =====
+// RTC 信令/服务地址；留空为离线本地预览模式。正式接入时由后端代理 RTC 鉴权，密钥不放前端。
+const RTC_CONFIG = {
+  signalingUrl: '',
+  iceServers: [] // 例：[{ urls: 'stun:stun.example.com:3478' }]
+};
+
+const localVideo = document.getElementById('localVideo');
+const camBtn = document.getElementById('camBtn');
+const rtcBtn = document.getElementById('rtcBtn');
+let localStream = null;
+let pc = null;
+
+async function startCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('当前浏览器不支持摄像头采集'); return;
+  }
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    localVideo.srcObject = localStream;
+    camBtn.textContent = '关闭摄像头';
+    if (RTC_CONFIG.signalingUrl) rtcBtn.disabled = false;
+  } catch (e) {
+    alert('未获得摄像头/麦克风权限');
+  }
+}
+
+function stopCamera() {
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+  localVideo.srcObject = null;
+  camBtn.textContent = '开启摄像头';
+  rtcBtn.disabled = true;
+  if (pc) { try { pc.close(); } catch(e) {} pc = null; }
+}
+
+// WebRTC 预留：接入信令后在此建立 PeerConnection，把 localStream 加入轨道，
+// 远端 ontrack 回填到远程画面容器。当前离线模式不执行。
+async function connectRTC() {
+  if (!RTC_CONFIG.signalingUrl) { alert('RTC 服务未配置，仅本地预览'); return; }
+  pc = new RTCPeerConnection({ iceServers: RTC_CONFIG.iceServers });
+  if (localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pc.ontrack = (e) => {
+    // 正式接入后：把远端流渲染到远程画面
+    document.getElementById('remoteSlot').textContent = '远端连线中…';
+  };
+  // 信令交换（offer/answer/ice）需后端配合，此处留接口位
+}
+
+camBtn.addEventListener('click', () => localStream ? stopCamera() : startCamera());
+rtcBtn.addEventListener('click', connectRTC);
+
+window.addEventListener('beforeunload', stopCamera);
+</script>
+</body>
+</html>

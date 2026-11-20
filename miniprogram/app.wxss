@@ -1,0 +1,46 @@
+/**app.wxss —— 数科云栖校园 全局设计（蓝色系，与logo一致）**/
+page {
+  background: #F5F7FB;
+  color: #1A2340;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  /* 自定义 tabBar 为 fixed 覆盖层，页面底部预留空间 */
+  padding-bottom: calc(112rpx + env(safe-area-inset-bottom));
+}
+/* 统一 border-box：scroll-view 若不设，宽度100%再叠加左右 padding 会溢出屏幕 */
+view, text, scroll-view, swiper, swiper-item, image, input, textarea, picker { box-sizing: border-box; }
+button { background: initial; }
+button:focus { outline: 0; }
+button::after { border: none; }
+
+.wrap { padding: 24rpx 28rpx 40rpx; }
+.card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  box-shadow: 0 6rpx 24rpx rgba(30,60,120,0.06);
+  padding: 28rpx;
+}
+.sec-title {
+  font-size: 30rpx; font-weight: 700; color: #1A2340;
+  margin: 32rpx 8rpx 18rpx;
+}
+.muted { color: #7A869C; font-size: 24rpx; }
+.tag {
+  display: inline-block; font-size: 20rpx; padding: 4rpx 14rpx;
+  border-radius: 20rpx; background: #E8F0FE; color: #2B6FE8;
+}
+.empty {
+  text-align: center; color: #7A869C; font-size: 26rpx;
+  padding: 48rpx 20rpx; line-height: 1.7;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #2B6FE8, #1E5FD6);
+  color: #fff; font-size: 28rpx; font-weight: 600;
+  border-radius: 44rpx; padding: 18rpx 0; text-align: center;
+  box-shadow: 0 8rpx 20rpx rgba(43,111,232,0.28);
+}
+.btn-ghost {
+  background: #fff; color: #2B6FE8; font-size: 26rpx;
+  border: 2rpx solid #2B6FE8; border-radius: 44rpx;
+  padding: 14rpx 0; text-align: center;
+}
+.hairline { height: 1rpx; background: #EDF0F6; margin: 8rpx 0; }

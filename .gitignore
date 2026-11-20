@@ -1,0 +1,80 @@
+# ===== 依赖 =====
+node_modules/
+miniprogram_npm/
+
+# ===== 敏感凭据（真实值绝不入库）=====
+.secret_backup/
+.env
+.env.*
+cloudrun/wxlogin/db.config.json
+
+# ===== 打包产物 =====
+*.zip
+.temp-runkit-*.zip
+
+# ===== 大体积数据（学校新闻语料，本地 RAG 用）=====
+cloudrun/wxlogin/corpus.json
+
+# ===== 大体积截图与调试缓存 =====
+docs/shots/
+docs/shots_auto/
+docs/attic/
+_shots_web/
+_shots_review/
+_browser/
+_ai_icons/
+_icons_raw/
+_gen/
+
+# ===== 开发调试临时脚本（爬虫/截图/探测，非项目代码）=====
+_*.log
+_ask.py
+_ask_check.js
+_auto_shot.js
+_auto_tab.js
+_browser/
+_cdp_*.js
+_click.py
+_cshot.py
+_dbcheck.js
+_e1.js
+_e2.js
+_e3.js
+_e4.js
+_edge_serve.js
+_fetch_asean_news.js
+_fix_food.js
+_food.bak.js
+_gen_geely*.js
+_gen_shops.js
+_grab.py
+_grab_puzzle.js
+_icon_build.js
+_icon_gen.js
+_m26.json
+_md2paper.js
+_meituan_*.js
+_pack_imgs.py
+_probe*.js
+_rageval.js
+_ragtest.js
+_review_shot.js
+_routetest.js
+_rt_shot.js
+_rv_*.js
+_shot_*.js
+_shots.py
+_staticcheck.js
+_swipe.py
+_tap.py
+_tap_order.js
+_web_probe.js
+_api_skills.json
+_auto.log
+
+# ===== 系统与编辑器 =====
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

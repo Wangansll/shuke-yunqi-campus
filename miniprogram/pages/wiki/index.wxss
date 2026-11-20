@@ -1,0 +1,59 @@
+/* pages/wiki/index.wxss —— 校园百科 */
+.page { min-height: 100vh; padding-bottom: 60rpx; }
+
+.hero { position: relative; padding: 38rpx 32rpx 34rpx; overflow: hidden; background: linear-gradient(150deg, #0C2557, #1D5FC0); }
+.h-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.06) 1rpx, transparent 1rpx), linear-gradient(90deg, rgba(255,255,255,0.06) 1rpx, transparent 1rpx); background-size: 40rpx 40rpx; }
+.h-t { position: relative; font-size: 40rpx; font-weight: 800; color: #fff; }
+.h-s { position: relative; font-size: 21rpx; color: #BBD3FF; margin-top: 10rpx; line-height: 1.6; }
+
+.card { margin: -20rpx 28rpx 0; position: relative; background: #fff; border-radius: 24rpx; padding: 22rpx; box-shadow: 0 12rpx 30rpx rgba(16,32,64,0.10); }
+.s-row { display: flex; align-items: center; gap: 12rpx; }
+.s-in { flex: 1; height: 76rpx; background: #F5F8FD; border-radius: 999rpx; padding: 0 24rpx; font-size: 25rpx; color: #1A2340; }
+.s-ph { color: #A9B2C2; font-size: 23rpx; }
+.s-btn { flex-shrink: 0; min-width: 120rpx; text-align: center; color: #fff; font-size: 25rpx; font-weight: 700; padding: 20rpx 24rpx; border-radius: 999rpx; background: linear-gradient(135deg, #2B6FE8, #1E5FD6); }
+.s-btn.off { opacity: 0.6; }
+.hots { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 16rpx; }
+.hot { font-size: 21rpx; color: #37456B; background: #F4F7FC; padding: 8rpx 18rpx; border-radius: 999rpx; }
+
+.tip { margin: 18rpx 32rpx 0; font-size: 21rpx; color: #C33B2C; line-height: 1.6; }
+
+.sec-t { margin: 28rpx 32rpx 12rpx; font-size: 26rpx; font-weight: 800; color: #0F1A33; }
+
+.r-card { margin: 0 28rpx 14rpx; background: #fff; border-radius: 20rpx; padding: 20rpx 22rpx; box-shadow: 0 6rpx 16rpx rgba(20,45,90,0.05); }
+.r-hd { display: flex; align-items: flex-start; gap: 12rpx; }
+.r-t { flex: 1; font-size: 26rpx; font-weight: 700; color: #1A2340; line-height: 1.45; }
+.r-tag { flex-shrink: 0; font-size: 18rpx; color: #2B6FE8; background: #EAF1FE; padding: 4rpx 12rpx; border-radius: 8rpx; }
+.r-x { font-size: 22rpx; color: #5A6684; line-height: 1.65; margin-top: 10rpx; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.r-x.open { display: block; -webkit-line-clamp: unset; }
+.r-ft { display: flex; align-items: center; justify-content: space-between; margin-top: 12rpx; }
+.r-d { font-size: 19rpx; color: #A9B2C2; }
+.r-a { font-size: 20rpx; color: #2B6FE8; }
+
+.g-grid { display: flex; flex-wrap: wrap; gap: 16rpx; padding: 0 28rpx; }
+.g-card {
+  width: calc(50% - 8rpx); background: #fff; border-radius: 20rpx; overflow: hidden;
+  box-shadow: 0 6rpx 16rpx rgba(20,45,90,0.05);
+  transition: width 0.2s ease;
+}
+/* 铺满：单张占满一行，图完整展开（校历那种长图也能看全） */
+.g-card.wide { width: 100%; }
+/* 收回后剩三张时，落单的那张撑满，别留半格空缺 */
+.g-grid > .g-card:last-child:nth-child(odd) { width: 100%; }
+.g-frame { position: relative; }
+.g-img { width: 100%; height: 200rpx; background: #EEF3FA; display: block; }
+.g-card.wide .g-img { height: auto; }
+.g-zoom {
+  position: absolute; right: 12rpx; top: 12rpx;
+  width: 48rpx; height: 48rpx; border-radius: 24rpx;
+  background: rgba(12,22,40,0.52); color: #fff;
+  font-size: 24rpx; line-height: 48rpx; text-align: center;
+}
+.g-hint {
+  position: absolute; left: 12rpx; bottom: 12rpx;
+  font-size: 17rpx; color: #fff; background: rgba(12,22,40,0.52);
+  padding: 5rpx 12rpx; border-radius: 10rpx;
+}
+.g-n { font-size: 24rpx; font-weight: 700; color: #1A2340; padding: 14rpx 16rpx 0; }
+.g-d { font-size: 18rpx; color: #7A869C; padding: 6rpx 16rpx 16rpx; line-height: 1.45; }
+
+.note { margin: 16rpx 32rpx 0; font-size: 19rpx; color: #A9B2C2; line-height: 1.6; }

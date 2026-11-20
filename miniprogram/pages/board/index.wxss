@@ -1,0 +1,110 @@
+/* pages/board/index.wxss —— 校园互助墙 */
+.page { min-height: 100vh; padding: 8rpx 0 40rpx; }
+.top { padding: 26rpx 32rpx 8rpx; }
+.th { display: flex; align-items: center; justify-content: space-between; }
+.t1 { font-size: 42rpx; font-weight: 800; color: #0F1A33; letter-spacing: 0.5rpx; }
+.pub {
+  font-size: 23rpx; font-weight: 700; color: #fff; padding: 12rpx 26rpx; border-radius: 999rpx;
+  background: linear-gradient(135deg, #2B6FE8, #1E5FD6);
+  box-shadow: 0 8rpx 18rpx rgba(43,111,232,0.26);
+}
+.t2 { font-size: 22rpx; color: #7A869C; margin-top: 12rpx; line-height: 1.65; }
+
+.filters { display: flex; gap: 12rpx; margin: 20rpx 28rpx 4rpx; flex-wrap: wrap; }
+.f { font-size: 23rpx; color: #5A6684; background: #FFFFFF; border: 1rpx solid #E7EEF9; padding: 10rpx 22rpx; border-radius: 999rpx; }
+.f.on { color: #1B5BC0; background: #E8F0FE; border-color: #C9DDFB; font-weight: 700; }
+.f.mine { margin-left: auto; }
+
+.cnote { margin: 14rpx 28rpx 0; font-size: 20rpx; color: #6B7C99; background: #F1F6FF; border-radius: 14rpx; padding: 14rpx 18rpx; line-height: 1.6; }
+.cnote.warn { color: #8A6100; background: #FFF6DB; }
+
+.empty { padding: 80rpx 40rpx; text-align: center; color: #8A94A8; font-size: 26rpx; }
+.empty-s { font-size: 21rpx; color: #A9B2C2; margin-top: 12rpx; line-height: 1.7; }
+
+.pcard { background: #fff; border-radius: 22rpx; margin: 16rpx 28rpx 0; padding: 24rpx; box-shadow: 0 6rpx 20rpx rgba(20,45,95,0.05); }
+.pc-h { display: flex; align-items: center; gap: 12rpx; }
+.pc-cat { font-size: 19rpx; color: #1B5BC0; background: #EAF2FF; padding: 5rpx 14rpx; border-radius: 20rpx; }
+.pc-mine { font-size: 18rpx; color: #0E8F6B; background: #E4F9F1; padding: 4rpx 12rpx; border-radius: 20rpx; }
+.pc-t { font-size: 28rpx; font-weight: 700; color: #0F1A33; margin-top: 14rpx; }
+.pc-d { font-size: 23rpx; color: #5A6684; line-height: 1.65; margin-top: 8rpx; }
+.pc-f { display: flex; align-items: center; gap: 16rpx; margin-top: 16rpx; flex-wrap: wrap; }
+.pc-time { font-size: 19rpx; color: #A9B2C2; }
+.pc-contact { font-size: 20rpx; color: #2B6FE8; }
+.pc-ask { font-size: 20rpx; color: #7A869C; margin-left: auto; }
+
+.foot { text-align: center; font-size: 19rpx; color: #A9B2C2; padding: 40rpx 44rpx 0; line-height: 1.7; }
+
+/* 发布面板 */
+.mask { position: fixed; inset: 0; background: rgba(15,25,45,0.45); z-index: 1000; }
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 1001;
+  background: #fff; border-radius: 32rpx 32rpx 0 0;
+  padding: 28rpx 32rpx calc(36rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -8rpx 40rpx rgba(20,40,80,0.12);
+}
+.sh-h { display: flex; align-items: center; justify-content: space-between; }
+.sh-t { font-size: 32rpx; font-weight: 800; color: #1A2340; }
+.sh-x { font-size: 44rpx; color: #AEB7C6; line-height: 1; }
+.frow { display: flex; align-items: center; gap: 16rpx; padding: 20rpx 0 6rpx; }
+.flb { font-size: 23rpx; color: #7A869C; width: 90rpx; }
+.fpick { font-size: 25rpx; color: #1A2340; display: flex; align-items: center; gap: 10rpx; }
+.farr { font-size: 19rpx; color: #9AA5BA; }
+.fipt {
+  margin-top: 14rpx; background: #F6F9FD; border-radius: 14rpx;
+  padding: 0 20rpx; height: 84rpx; font-size: 25rpx; color: #1A2340;
+}
+.fta {
+  width: 100%; box-sizing: border-box; margin-top: 14rpx; background: #F6F9FD; border-radius: 14rpx;
+  padding: 20rpx; font-size: 25rpx; color: #1A2340; line-height: 1.65; min-height: 160rpx;
+}
+.fbtn {
+  margin-top: 24rpx; text-align: center; color: #fff; font-size: 28rpx; font-weight: 700;
+  padding: 22rpx 0; border-radius: 999rpx;
+  background: linear-gradient(135deg, #2B6FE8, #1E5FD6);
+  box-shadow: 0 10rpx 22rpx rgba(43,111,232,0.28);
+}
+.fbtn.dis { opacity: 0.6; }
+.fhint { text-align: center; font-size: 19rpx; color: #A9B2C2; margin-top: 14rpx; }
+
+/* 作者身份：班级 · 头衔 */
+.pc-who { margin-left: auto; max-width: 380rpx; display: inline-flex; align-items: center; gap: 8rpx; }
+.pc-who.plain { font-size: 18rpx; color: #7A869C; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+.pc-klass { font-size: 17rpx; color: #8B96A8; white-space: nowrap; }
+.pc-h .pc-mine { margin-left: 0; }
+.pc-h .pc-who + .pc-mine { margin-left: 0; }
+
+/* 发布面板里的「以《23计科4班》· 头衔 发帖」 */
+.fid { display: flex; align-items: center; gap: 10rpx; margin-top: 18rpx; flex-wrap: wrap; }
+.fid-t { font-size: 20rpx; color: #8B96A8; }
+.fid-k { font-size: 21rpx; font-weight: 700; color: #1A2340; }
+.fid-h { font-size: 19rpx; font-weight: 700; padding: 4rpx 12rpx; border-radius: 999rpx; }
+.fid-h.gold { color: #57390A; background: linear-gradient(135deg, #F8E5B4, #E5B94C); }
+.fid-h.silver { color: #3C4A61; background: linear-gradient(135deg, #F0F4FA, #C9D4E3); }
+.fid-h.bronze { color: #5A3615; background: linear-gradient(135deg, #F7E4D0, #D9A97C); }
+.fid-h.none { color: #7A869C; background: #EEF2F9; }
+.fid-tip { font-size: 19rpx; color: #A9B2C2; margin-top: 8rpx; line-height: 1.6; }
+
+/* ---------- 小横条牌匾头衔（发帖身份 / 列表投稿人，白底卡片上） ---------- */
+.tplate {
+  position: relative; display: inline-flex; align-items: center; gap: 5rpx;
+  height: 40rpx; padding: 0 14rpx; border-radius: 7rpx;
+  background: linear-gradient(135deg, #FBEBC2, #E7BE59);
+  border: 1rpx solid #C99B33;
+  box-shadow: inset 0 0 0 2rpx rgba(255,255,255,0.42), 0 2rpx 6rpx rgba(0,0,0,0.10);
+}
+.tplate::before, .tplate::after {
+  content: ''; position: absolute; top: 50%; width: 8rpx; height: 8rpx;
+  margin-top: -4rpx; background: rgba(255,255,255,0.95); transform: rotate(45deg); border-radius: 1rpx;
+}
+.tplate::before { left: 4rpx; }
+.tplate::after { right: 4rpx; }
+.tp-cup { width: 26rpx; height: 26rpx; display: block; }
+.tp-cup-ph { font-size: 18rpx; color: inherit; opacity: 0.85; }
+.tp-name { font-size: 18rpx; font-weight: 800; letter-spacing: 0.5rpx; white-space: nowrap; color: #4A2E00; }
+.tplate.silver { background: linear-gradient(135deg, #F4F7FB, #C1CEDF); border-color: #9FB0C8; }
+.tplate.silver .tp-name { color: #33415C; }
+.tplate.bronze { background: linear-gradient(135deg, #F8E7D2, #D09A66); border-color: #A96C37; }
+.tplate.bronze .tp-name { color: #4B2A0E; }
+.tplate.none { background: #EEF2F9; border-color: #D9E0EC; box-shadow: none; }
+.tplate.none .tp-name { color: #7A869C; }
+.tplate.none::before, .tplate.none::after { background: #fff; }

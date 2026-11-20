@@ -1,0 +1,195 @@
+<!-- pages/timetable/index.wxml —— 课表：看 + 添加 / 导入 / 识别 / 手动输入 -->
+<view class="page">
+  <!-- 周次与统计 -->
+  <view class="top">
+    <view class="wk">
+      <view class="wk-b" bindtap="prevWeek">‹</view>
+      <picker mode="selector" range="{{weekList}}" value="{{week-1}}" bindchange="onWeekPick">
+        <view class="wk-n">第 {{week}} 周 <text class="wk-a">▾</text></view>
+      </picker>
+      <view class="wk-b" bindtap="nextWeek">›</view>
+    </view>
+    <view class="top-r">{{cnt}} 节<text class="tr-dot">·</text>今 {{todayCnt}} 节</view>
+  </view>
+
+  <!-- 当前班级：切班级换对应那份课表 -->
+  <view class="ck-bar">
+    <view class="ck-l">当前课表</view>
+    <view class="ck-n">{{klassText}}</view>
+    <view class="ck-h">在我的页切班级可换课表</view>
+  </view>
+
+  <!-- 数据来源声明：课程均为自定义、非校方接口、无法实时更新 -->
+  <view class="src-note">
+    <view class="sn-badge">!</view>
+    <view class="sn-tx">
+      <view class="sn-t">课程由同学自行录入，未接校方教务接口</view>
+      <view class="sn-s">无法实时更新，请留意课程与调课变化，以教务系统通知为准。</view>
+    </view>
+  </view>
+
+  <!-- 四路录入 -->
+  <view class="ops">
+    <view class="op" bindtap="openForm">
+      <view class="op-ic">＋</view>
+      <view class="op-n">添加</view>
+      <view class="op-s">点格子填</view>
+    </view>
+    <view class="op" bindtap="openImport">
+      <view class="op-ic">⇩</view>
+      <view class="op-n">导入</view>
+      <view class="op-s">粘教务文本</view>
+    </view>
+    <view class="op" bindtap="doOcr">
+      <view class="op-ic">▣</view>
+      <view class="op-n">识别</view>
+      <view class="op-s">{{ocrBusy?'读图中':'课表截图'}}</view>
+    </view>
+    <view class="op" bindtap="openForm">
+      <view class="op-ic">⌨</view>
+      <view class="op-n">手动输入</view>
+      <view class="op-s">一条条敲</view>
+    </view>
+  </view>
+
+  <view class="ocr-tip" wx:if="{{ocrTip}}">{{ocrTip}}</view>
+
+  <!-- 网格：横向可滑，时间列固定在最左 -->
+  <scroll-view class="gs" scroll-x enable-flex show-scrollbar="{{false}}">
+    <view class="grid" style="width:{{gridW}}rpx">
+      <!-- 表头 -->
+      <view class="gh" style="height:{{headH}}rpx">
+        <view class="gh-c0" style="width:{{timeW}}rpx">周 / 节次</view>
+        <view class="gh-c {{index===todayCol?'on':''}}" wx:for="{{days}}" wx:key="*this" style="width:{{colW}}rpx">{{item}}</view>
+      </view>
+
+      <view class="gb" style="height:{{bodyH}}rpx">
+        <!-- 左列：五大节 -->
+        <view class="gt" style="width:{{timeW}}rpx">
+          <view class="gt-c" wx:for="{{slots}}" wx:key="k" style="height:{{rowH}}rpx">
+            <view class="gt-n">{{item.n}}</view>
+            <view class="gt-s">({{item.sg}})</view>
+            <view class="gt-t">{{item.time}}</view>
+          </view>
+        </view>
+
+        <!-- 空格子：点一下就带着星期与大节开表单 -->
+        <view class="gc">
+          <view class="gc-c" wx:for="{{cells}}" wx:key="k"
+            style="left:{{item.left}}rpx;top:{{item.top}}rpx;width:{{colW}}rpx;height:{{rowH}}rpx"
+            data-day="{{item.day}}" data-s="{{item.s}}" bindtap="openForm"></view>
+
+          <view class="blk c-{{item.c}}" wx:for="{{blocks}}" wx:key="id"
+            style="left:{{item.left}}rpx;top:{{item.top}}rpx;width:{{colW-6}}rpx;height:{{item.h}}rpx"
+            data-id="{{item.id}}" bindtap="editCourse">
+            <view class="blk-n">{{item.n}}</view>
+            <view class="blk-t" wx:if="{{item.t}}">教师：{{item.t}}</view>
+            <view class="blk-m">{{item.sgTxt}}<text wx:if="{{item.r}}"> · {{item.r}}</text></view>
+            <view class="blk-m">{{item.wTxt}}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 备注行 -->
+      <view class="gn" style="height:{{noteH}}rpx">
+        <view class="gn-l" style="width:{{timeW}}rpx">备注</view>
+        <view class="gn-r"></view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="foot">
+    <text wx:if="{{isDemo}}">现在这份是示例课表（默认铺满 1-16 周，切到任意一周都有课），点任意一块可改；表格可左右滑看完整一周，或在下面清空重来。</text>
+    <text wx:else>课程均为自定义、未接校方接口，无法实时更新，请注意课程变化。课表只存本机：换手机、清缓存就没了。点格子添加，点课块改或删，表格可左右滑。</text>
+  </view>
+  <view class="foot-act" bindtap="clearAll">清空课表</view>
+
+  <!-- ============ 表单弹层：添加 / 手动输入 / 改 ============ -->
+  <view class="mask" wx:if="{{showForm}}" bindtap="closeForm"></view>
+  <view class="sheet" wx:if="{{showForm}}">
+    <view class="sh-h">
+      <view class="sh-t">{{form.id?'改这门课':'添加课程'}}</view>
+      <view class="sh-x" bindtap="closeForm">×</view>
+    </view>
+    <scroll-view class="sh-body" scroll-y>
+      <view class="fr">
+        <view class="fl">课程名</view>
+        <input class="fi" value="{{form.n}}" placeholder="如 软件工程" placeholder-class="fi-ph" bindinput="fName" />
+      </view>
+      <view class="fr">
+        <view class="fl">教师</view>
+        <input class="fi" value="{{form.t}}" placeholder="可不填" placeholder-class="fi-ph" bindinput="fTeacher" />
+      </view>
+      <view class="fr">
+        <view class="fl">地点</view>
+        <view class="addr">
+          <picker class="ad-b" mode="selector" range="{{bNames}}" value="{{form.bi}}" bindchange="fBuilding">
+            <view class="ad-p">{{bNames[form.bi]}} <text class="fv-a">▾</text></view>
+          </picker>
+          <input wx:if="{{form.bi<bOther}}" class="ad-in" type="number" value="{{form.room}}" placeholder="房间号 103" placeholder-class="fi-ph" bindinput="fRoom" />
+          <input wx:else class="ad-in" type="text" value="{{form.room}}" placeholder="写具体地点" placeholder-class="fi-ph" bindinput="fRoom" />
+        </view>
+      </view>
+
+      <view class="fr-pair">
+        <picker class="fp" mode="selector" range="{{days}}" value="{{form.day-1}}" bindchange="fDay">
+          <view class="fl">星期</view>
+          <view class="fv">{{days[form.day-1]}} <text class="fv-a">▾</text></view>
+        </picker>
+        <picker class="fp" mode="selector" range="{{slots}}" range-key="n" value="{{form.s-1}}" bindchange="fSlot">
+          <view class="fl">起始节</view>
+          <view class="fv">{{slots[form.s-1].n}} <text class="fv-a">▾</text></view>
+        </picker>
+      </view>
+
+      <view class="fr-pair">
+        <picker class="fp" mode="selector" range="{{spanList}}" value="{{form.span-1}}" bindchange="fSpan">
+          <view class="fl">跨几节</view>
+          <view class="fv">{{form.span}} 个大节 <text class="fv-a">▾</text></view>
+        </picker>
+        <view class="fp">
+          <view class="fl">周次</view>
+          <input class="fv-in" value="{{form.wtxt}}" placeholder="1-16 / 11 / 1-16单" placeholder-class="fi-ph" bindinput="fWeeks" />
+        </view>
+      </view>
+
+      <view class="sh-tip">周次写「1-16」就是每周都上，「11」只有第 11 周，「1-16单」是单周。</view>
+      <view class="sh-tip">地点先选楼、再填房间号：吉贤楼＝原 2 号教学楼，吉智楼＝原 3 教，吉芯楼＝原 6 教，吉思楼＝原 7 教，吉美楼＝原综合楼，吉星楼＝图书馆。不是教室的地点（如思政课实践基地）选「其它地点」自己写。</view>
+      <view class="sh-btns">
+        <view class="sb main" bindtap="saveForm">{{form.id?'保存修改':'加进课表'}}</view>
+        <view class="sb danger" wx:if="{{form.id}}" bindtap="delCourse">删掉这门课</view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ============ 导入弹层 ============ -->
+  <view class="mask" wx:if="{{showImport}}" bindtap="closeImport"></view>
+  <view class="sheet" wx:if="{{showImport}}">
+    <view class="sh-h">
+      <view class="sh-t">导入课表</view>
+      <view class="sh-x" bindtap="closeImport">×</view>
+    </view>
+    <scroll-view class="sh-body" scroll-y>
+      <view class="sh-tip" wx:if="{{ocrTip}}">{{ocrTip}}</view>
+      <view class="sh-tip">把教务系统的课表复制过来（一门课一行也行，一门课几行也行），每行要带「星期」和「小节 / 第几大节」。地点里的旧楼名会自动换成改版后的叫法，如「6号教学楼103」→「吉芯楼103」。</view>
+      <textarea class="ta" value="{{importText}}" placeholder="示例：&#10;软件工程 教师：王忠良 星期四 05-06小节 第11周 6号教学楼202&#10;移动互联网开发 教师：蔡迎华 星期五 05-06小节 第11周 综合楼311" placeholder-class="fi-ph" bindinput="onImportInput" maxlength="-1" />
+      <view class="ta-btns">
+        <view class="tb" bindtap="pasteClip">粘剪贴板</view>
+        <view class="tb main" bindtap="doParse">解析</view>
+      </view>
+
+      <view class="pv" wx:if="{{parsed}}">
+        <view class="pv-h">认出 {{preview.length}} 门{{previewBad?('，另有 '+previewBad+' 行没认出来'):''}}</view>
+        <view class="pv-i" wx:for="{{preview}}" wx:key="id">
+          <text class="pv-d">周{{dayShort[item.day-1]}}</text>
+          <view class="pv-b">
+            <text class="pv-n">{{item.n}}</text>
+            <text class="pv-m">{{item.t||'—'}} · 第{{item.s}}大节起{{item.span>1?' 连'+item.span+'节':''}} · {{item.wTxt}}</text>
+            <text class="pv-r" wx:if="{{item.r}}">📍 {{item.r}}</text>
+          </view>
+        </view>
+        <view class="sb main" wx:if="{{preview.length}}" bindtap="confirmImport">确认导入 {{preview.length}} 门</view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

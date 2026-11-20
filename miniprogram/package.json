@@ -1,0 +1,9 @@
+{
+  "name": "shu-ke-yunqi-campus",
+  "version": "1.0.0",
+  "description": "数科云栖校园微信小程序",
+  "private": true,
+  "dependencies": {
+    "@tencent-ai/workbuddy-cloud-sdk": "^0.1.4-dev.71e5d1e.202611161655"
+  }
+}

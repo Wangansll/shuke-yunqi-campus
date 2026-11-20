@@ -1,0 +1,303 @@
+/* pages/canteen/index.wxss —— 食堂对比 */
+page { background: #F4F7FC; }
+
+.wrap { padding-bottom: 60rpx; }
+
+/* 顶部 */
+.hero {
+  position: relative; overflow: hidden;
+  padding: 44rpx 36rpx 96rpx;
+  background: linear-gradient(150deg, #0C2557 0%, #16418E 62%, #1D5FC0 100%);
+  border-radius: 0 0 40rpx 40rpx;
+}
+.h-glow {
+  position: absolute; right: -90rpx; top: -110rpx;
+  width: 340rpx; height: 340rpx; border-radius: 50%;
+  background: radial-gradient(circle, rgba(90, 160, 255, 0.45), rgba(90, 160, 255, 0) 68%);
+}
+.h-kicker {
+  position: relative; font-size: 20rpx; letter-spacing: 2rpx;
+  color: rgba(255, 255, 255, 0.62);
+}
+.h-title {
+  position: relative; margin-top: 12rpx;
+  font-size: 58rpx; font-weight: 800; color: #fff; letter-spacing: 2rpx;
+}
+.h-src {
+  position: relative; margin-top: 14rpx;
+  font-size: 20rpx; color: rgba(255, 255, 255, 0.5);
+}
+
+/* 食堂切换：五个食堂横着滑，不用两列大卡占掉半屏 */
+.pills {
+  margin: 18rpx 0 0; padding: 2rpx 28rpx 6rpx;
+  display: flex; position: relative; z-index: 2;
+  white-space: nowrap; box-sizing: border-box;
+}
+.pill {
+  flex-shrink: 0; width: 194rpx; box-sizing: border-box;
+  margin-right: 14rpx; padding: 18rpx 20rpx; border-radius: 20rpx;
+  background: #fff; border: 2rpx solid #E6EDF8;
+  box-shadow: 0 6rpx 18rpx rgba(16, 46, 102, 0.06);
+  display: flex; flex-direction: column; gap: 6rpx;
+}
+.pill:last-child { margin-right: 0; }
+.pill.on {
+  background: linear-gradient(135deg, #1D5FC0, #16459B);
+  border-color: transparent;
+  box-shadow: 0 10rpx 24rpx rgba(29, 95, 192, 0.28);
+}
+.p-n { font-size: 28rpx; font-weight: 700; color: #0F1A33; white-space: nowrap; }
+.pill.on .p-n { color: #fff; }
+.p-a { font-size: 18rpx; color: #7E8AA0; white-space: nowrap; }
+.pill.on .p-a { color: rgba(255, 255, 255, 0.72); }
+
+/* 当前食堂卡 */
+.card {
+  margin: 24rpx 28rpx 0; padding: 30rpx 30rpx 26rpx;
+  background: #fff; border-radius: 26rpx;
+  box-shadow: 0 6rpx 20rpx rgba(16, 46, 102, 0.06);
+}
+.c-hd { display: flex; align-items: center; gap: 14rpx; }
+.c-t { font-size: 36rpx; font-weight: 800; color: #0F1A33; }
+.c-badge {
+  font-size: 19rpx; color: #16459B; background: #EAF1FE;
+  padding: 5rpx 14rpx; border-radius: 999rpx;
+}
+.c-extra {
+  margin-top: 12rpx; font-size: 22rpx; color: #5D6B82; line-height: 1.5;
+}
+.c-k {
+  font-size: 18rpx; color: #16459B; background: #EDF3FD;
+  padding: 4rpx 12rpx; border-radius: 8rpx; margin-right: 12rpx;
+}
+
+.c-metrics { display: flex; margin-top: 26rpx; }
+.m { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+.m-v { font-size: 42rpx; font-weight: 800; color: #16459B; line-height: 1.1; }
+.m-v.dim { color: #C3CCDA; }
+.m-k { font-size: 18rpx; color: #8B96A8; margin-top: 6rpx; }
+
+.bar {
+  margin-top: 22rpx; height: 12rpx; border-radius: 999rpx;
+  background: #EDF2FA; overflow: hidden;
+}
+.bar-in {
+  height: 100%; border-radius: 999rpx;
+  background: linear-gradient(90deg, #2B6FE8, #5AA0FF);
+}
+.bar-tx { margin-top: 10rpx; font-size: 18rpx; color: #A9B4C6; }
+
+/* 分区标题 */
+.sec-h {
+  display: flex; align-items: flex-end; gap: 14rpx;
+  margin: 40rpx 28rpx 18rpx;
+}
+.sec-t {
+  font-size: 28rpx; font-weight: 700; color: #0F1A33;
+  padding-left: 16rpx; border-left: 6rpx solid #2B6FE8; line-height: 1.1;
+}
+.sec-e {
+  font-size: 16rpx; color: #B3BFD2; letter-spacing: 4rpx;
+  padding-bottom: 2rpx;
+}
+
+/* 档口清单：左边品类、右边档口，一整张卡里排完，比每个品类一张卡省一半高度 */
+.stalls {
+  margin: 0 28rpx; padding: 6rpx 24rpx;
+  background: #fff; border-radius: 22rpx;
+  box-shadow: 0 4rpx 14rpx rgba(16, 46, 102, 0.05);
+}
+.sr {
+  display: flex; padding: 18rpx 0;
+  border-bottom: 1rpx solid #F2F6FB;
+}
+.sr:last-child { border-bottom: none; }
+.sr-k { width: 132rpx; flex-shrink: 0; padding-top: 7rpx; }
+.sr-c { display: block; font-size: 21rpx; font-weight: 700; color: #16459B; line-height: 1.3; }
+.sr-n { display: block; margin-top: 4rpx; font-size: 17rpx; color: #B3BFD2; }
+.sr-v { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 10rpx; }
+.ch {
+  font-size: 21rpx; color: #33405A; line-height: 1.35;
+  background: #F6F9FE; border: 1rpx solid #E7EEF9;
+  padding: 8rpx 14rpx; border-radius: 10rpx;
+}
+
+/* 横向对比表 */
+.cmp {
+  margin: 0 28rpx; padding: 6rpx 18rpx;
+  background: #fff; border-radius: 22rpx;
+  box-shadow: 0 4rpx 14rpx rgba(16, 46, 102, 0.05);
+}
+.cmp-row {
+  display: flex; align-items: center;
+  padding: 15rpx 0; border-bottom: 1rpx solid #F0F4FA;
+}
+.cmp-row:last-child { border-bottom: none; }
+.cmp-head { padding-top: 20rpx; }
+.cmp-k { width: 104rpx; font-size: 21rpx; color: #6B788C; flex-shrink: 0; }
+.cmp-head .cmp-k { color: #A9B4C6; font-size: 18rpx; }
+.cmp-c { flex: 1; min-width: 0; text-align: center; }
+.cmp-head .cmp-c { font-size: 18rpx; color: #8B96A8; }
+.cmp-v { font-size: 24rpx; color: #33405A; font-weight: 600; }
+.cmp-v.hi {
+  color: #fff; background: #16459B;
+  padding: 2rpx 12rpx; border-radius: 8rpx;
+}
+.cmp-v.zero { color: #D2DAE6; font-weight: 400; }
+
+/* 评分 / 评价数两行：和数据行区分开 */
+.cmp-rev { background: #FAFCFF; }
+.cmp-rev .cmp-k { color: #2B6FE8; font-weight: 600; }
+.cmp-rev .cmp-v { font-size: 24rpx; color: #1B5BC0; }
+.cmp-note {
+  margin: 14rpx 36rpx 0; font-size: 18rpx; color: #A9B4C6; line-height: 1.6;
+}
+
+/* 评价 */
+.rev-box {
+  margin: 0 28rpx; padding: 26rpx;
+  background: #fff; border-radius: 22rpx;
+  box-shadow: 0 4rpx 14rpx rgba(16, 46, 102, 0.05);
+}
+.rev-to { font-size: 20rpx; color: #8B96A8; }
+.rev-avg { color: #16459B; }
+.stars { display: flex; gap: 12rpx; margin-top: 16rpx; }
+.star { font-size: 46rpx; color: #E3E9F3; line-height: 1; }
+.star.on { color: #F5A524; }
+.rev-in {
+  margin-top: 20rpx; height: 84rpx; padding: 0 22rpx;
+  background: #F5F8FD; border-radius: 16rpx;
+  font-size: 25rpx; color: #0F1A33;
+}
+.rev-btn {
+  margin-top: 20rpx; height: 84rpx; border-radius: 999rpx;
+  background: linear-gradient(135deg, #2B6FE8, #16459B);
+  color: #fff; font-size: 27rpx; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10rpx 22rpx rgba(43, 111, 232, 0.26);
+}
+.rev-btn.dis { background: #DCE4F1; color: #fff; box-shadow: none; }
+
+.rev-list { margin: 18rpx 28rpx 0; }
+.rev {
+  padding: 24rpx 26rpx; background: #fff; border-radius: 20rpx;
+  margin-bottom: 14rpx;
+  box-shadow: 0 4rpx 12rpx rgba(16, 46, 102, 0.04);
+}
+.r-hd { display: flex; align-items: center; justify-content: space-between; }
+.r-h { font-size: 22rpx; font-weight: 700; color: #16459B; }
+.r-s { font-size: 20rpx; color: #F5A524; letter-spacing: 1rpx; }
+.r-t { margin-top: 12rpx; font-size: 25rpx; color: #33405A; line-height: 1.62; }
+.r-f { margin-top: 12rpx; font-size: 18rpx; color: #B4BDCC; }
+.r-local { color: #D98B0E; }
+
+.rev-empty {
+  margin: 18rpx 28rpx 0; padding: 40rpx;
+  text-align: center; font-size: 22rpx; color: #A9B4C6;
+  background: #fff; border-radius: 20rpx;
+}
+
+/* 底部行动 */
+.cta { display: flex; gap: 18rpx; margin: 36rpx 28rpx 0; }
+.cta-a, .cta-b {
+  flex: 1; height: 92rpx; border-radius: 999rpx;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26rpx; font-weight: 700;
+}
+.cta-a {
+  background: #fff; color: #16459B;
+  border: 2rpx solid #C9D8F0;
+}
+.cta-b {
+  background: linear-gradient(135deg, #FFB01F, #F08200);
+  color: #fff;
+  box-shadow: 0 10rpx 22rpx rgba(240, 130, 0, 0.24);
+}
+.cta-c {
+  margin: 16rpx 28rpx 0; height: 88rpx; border-radius: 999rpx;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 25rpx; font-weight: 700; color: #16459B;
+  background: #EDF3FD; border: 2rpx dashed #B9CFF2;
+}
+.cta-note { margin: 14rpx 36rpx 0; font-size: 18rpx; color: #A9B4C6; line-height: 1.6; }
+
+.foot {
+  margin: 28rpx 36rpx 0; font-size: 18rpx; color: #A9B4C6;
+  line-height: 1.7;
+}
+
+/* ===== 视图切换：校内食堂 / 校外外卖 ===== */
+.vtabs {
+  position: relative; z-index: 2;
+  display: flex; gap: 12rpx;
+  margin: -60rpx 28rpx 0;
+}
+.vtab {
+  flex: 1; height: 78rpx; border-radius: 18rpx;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; color: #6B788C; font-size: 24rpx;
+  box-shadow: 0 6rpx 18rpx rgba(16, 46, 102, 0.07);
+}
+.vtab.on {
+  background: linear-gradient(135deg, #1D5FC0, #16459B);
+  color: #fff; font-weight: 700;
+  box-shadow: 0 10rpx 24rpx rgba(29, 95, 192, 0.26);
+}
+
+/* ===== 校外外卖 ===== */
+.out-bar {
+  margin: 24rpx 28rpx 0; padding: 18rpx 24rpx;
+  background: #EAF1FE; border-radius: 16rpx;
+  display: flex; align-items: center; gap: 12rpx;
+}
+.ob-k {
+  font-size: 18rpx; color: #16459B; background: #fff;
+  padding: 4rpx 12rpx; border-radius: 999rpx; flex-shrink: 0;
+}
+.ob-v { font-size: 22rpx; color: #16459B; font-weight: 600; }
+.out-tip {
+  margin: 14rpx 36rpx 0; font-size: 19rpx; color: #8B96A8; line-height: 1.65;
+}
+
+.kind-sec { margin: 34rpx 28rpx 0; }
+.kind-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-left: 16rpx; border-left: 6rpx solid #2B6FE8; line-height: 1.1;
+}
+.kind-t { font-size: 27rpx; font-weight: 700; color: #0F1A33; }
+.kind-n { font-size: 18rpx; color: #A9B4C6; }
+
+.shop {
+  display: flex; align-items: center; gap: 20rpx;
+  margin-top: 16rpx; padding: 18rpx;
+  background: #fff; border-radius: 20rpx;
+  box-shadow: 0 4rpx 14rpx rgba(16, 46, 102, 0.05);
+}
+.sh-img {
+  width: 132rpx; height: 132rpx; border-radius: 16rpx;
+  flex-shrink: 0; background: #F2F6FD;
+}
+.sh-main { flex: 1; min-width: 0; }
+.sh-name {
+  font-size: 26rpx; font-weight: 700; color: #0F1A33; line-height: 1.35;
+  overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.sh-meta { display: flex; align-items: center; gap: 14rpx; margin-top: 10rpx; }
+.sh-score { font-size: 21rpx; color: #F08200; font-weight: 700; }
+.sh-sales { font-size: 19rpx; color: #8B96A8; }
+.sh-dist { font-size: 19rpx; color: #8B96A8; }
+.sh-fee { margin-top: 8rpx; font-size: 19rpx; color: #6B788C; }
+.sh-go { font-size: 20rpx; color: #16459B; flex-shrink: 0; }
+
+/* 美食鉴赏入口 */
+.food-entry {
+  display: flex; align-items: center; justify-content: space-between; gap: 16rpx;
+  margin: 24rpx 24rpx 0; padding: 24rpx 22rpx;
+  background: linear-gradient(135deg, #2A1B12, #8C4A28); border-radius: 20rpx;
+}
+.fe-l { flex: 1; min-width: 0; }
+.fe-t { display: block; font-size: 26rpx; font-weight: 800; color: #FFF6E9; }
+.fe-s { display: block; margin-top: 8rpx; font-size: 19rpx; color: #E4B98C; line-height: 1.5; }
+.fe-go { flex-shrink: 0; font-size: 22rpx; font-weight: 700; color: #2A1B12; background: #FFD8A6; padding: 12rpx 22rpx; border-radius: 999rpx; }

@@ -1,0 +1,89 @@
+<!-- pages/chat/index.wxml —— 小栖 AI 对话 -->
+<view class="page tab-page">
+  <view class="head">
+    <view class="avatar"><image class="av-img" src="/images/brand/xiaoqi-head.png" mode="aspectFill" /></view>
+    <view class="h-tx">
+      <view class="h-name">小栖 <text class="online">{{modelReady?'在线':'连接中'}}</text></view>
+      <view class="h-sub">
+        <text class="mchip" catchtap="tapModel">{{modelShow}}</text>
+        <text class="h-kb">校情 · 教务 · 东盟 · 吉利</text>
+      </view>
+    </view>
+    <view class="clear" bindtap="clearChat">清空</view>
+  </view>
+
+  <scroll-view class="msgs" scroll-y scroll-into-view="{{endAnchor}}" enhanced show-scrollbar="{{false}}">
+    <view class="welcome" wx:if="{{messages.length===0}}">
+      <view class="w-stage">
+        <view class="w-halo"></view>
+        <image class="w-mascot" src="/images/brand/xiaoqi.png" mode="aspectFit" />
+      </view>
+      <view class="w-bird">云栖助手</view>
+      <view class="w-t">你好，我是小栖</view>
+      <view class="w-id">
+        <text class="w-id-chip">{{modelShow}}</text>
+        <text class="w-id-tx">南宁数字科技学院 · 学院与东盟百科</text>
+      </view>
+      <view class="w-s">校情专业、食堂宿舍、教务项目、东盟十国，直接问我</view>
+
+      <!-- 快捷问题轮播：一屏一组，左右滑动切换 -->
+      <swiper class="w-swiper" indicator-dots indicator-color="#DCE4F2" indicator-active-color="#2B6FE8"
+        circular="{{true}}" autoplay="{{true}}" interval="3800" duration="420">
+        <swiper-item wx:for="{{chipGroups}}" wx:key="title">
+          <view class="w-group">
+            <view class="w-group-t">{{item.title}}</view>
+            <view class="w-chips">
+              <view class="w-chip" wx:for="{{item.list}}" wx:for-item="q" wx:key="*this"
+                data-q="{{q}}" bindtap="useChip">{{q}}</view>
+            </view>
+          </view>
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <block wx:for="{{messages}}" wx:key="id">
+      <view class="msg {{item.role}}" id="m{{item.id}}">
+        <view class="bubble" wx:if="{{item.role==='user'}}">{{item.content}}</view>
+        <view class="bubble ai" wx:else>
+          <text wx:if="{{item.disp}}">{{item.disp}}</text>
+          <text class="typing" wx:if="{{item.streaming && !item.disp}}">思考中…</text>
+          <text class="cursor" wx:if="{{item.streaming && item.disp}}">▍</text>
+        </view>
+      </view>
+      <view class="acts" wx:if="{{item.role!=='user' && item.acts.length > 0}}">
+        <view class="act" wx:for="{{item.acts}}" wx:for-item="a" wx:key="u" data-u="{{a.u}}" catchtap="goAct">
+          <text class="act-ic">{{a.ic}}</text>
+          <text class="act-n">{{a.n}}</text>
+          <text class="act-a">›</text>
+        </view>
+      </view>
+      <view class="refs" wx:if="{{item.role!=='user' && item.refs.length > 0}}">
+        <view class="refs-hd" catchtap="toggleRefs" data-idx="{{index}}">
+          <text class="refs-badge">{{item.refs.length}}</text>
+          <text class="refs-tx">条校内资料</text>
+          <text class="refs-act">{{item.open ? '收起' : '查看来源'}}</text>
+        </view>
+        <view class="refs-bd" wx:if="{{item.open}}">
+          <view class="ref-row" wx:for="{{item.refs}}" wx:for-item="r" wx:for-index="ri" wx:key="id">
+            <text class="ref-no">{{ri+1}}</text>
+            <view class="ref-info">
+              <text class="ref-name">{{r.t}}</text>
+              <text class="ref-src">{{r.src}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 跟随锚点：两个交替使用，每次更新切换 id 才会触发滚动（同值不会重复滚动） -->
+    <view id="btA" class="anchor"></view>
+    <view id="btB" class="anchor"></view>
+  </scroll-view>
+
+  <view class="inputbar">
+    <textarea class="cin" value="{{input}}" placeholder="问小栖任何校园问题…" confirm-type="send"
+      auto-height maxlength="-1" cursor-spacing="24" show-confirm-bar="{{false}}"
+      bindinput="onInput" bindconfirm="send" disabled="{{generating}}" />
+    <view class="cbtn {{generating?'stop':''}}" bindtap="onSendOrStop">{{generating?'停止':'发送'}}</view>
+  </view>
+</view>
